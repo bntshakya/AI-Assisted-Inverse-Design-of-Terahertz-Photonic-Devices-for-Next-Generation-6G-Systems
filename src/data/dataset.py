@@ -5,15 +5,27 @@ class ComsolDataset(Dataset):
     def __init__(self, pt_file_path):
         # Load the binary tensor file
         data = torch.load(pt_file_path)
-        self.x = data['geometries']
-        self.y = data['em_responses']
+        raw_x = data['geometries'].float()
+        raw_y = data['em_responses'].float()
+        
+        # Calculate the statistics (mean and standard deviation)
+        self.x_mean = raw_x.mean(dim=0)
+        self.x_std = raw_x.std(dim=0)
+        self.y_mean = raw_y.mean(dim=0)
+        self.y_std = raw_y.std(dim=0)
+        
+        # Prevent division by zero if a feature is completely constant
+        self.x_std[self.x_std == 0] = 1.0
+        self.y_std[self.y_std == 0] = 1.0
+        
+        # NORMALIZE THE DATA: z = (x - mean) / std
+        self.x = (raw_x - self.x_mean) / self.x_std
+        self.y = (raw_y - self.y_mean) / self.y_std
         
     def __len__(self):
-        # Tell PyTorch the total number of rows
         return len(self.x)
     
     def __getitem__(self, idx):
-        # Fetch a single row (input and target) by its index
         return self.x[idx], self.y[idx]
 
 def get_dataloaders(pt_file_path, batch_size=64, train_split=0.7, val_split=0.15):

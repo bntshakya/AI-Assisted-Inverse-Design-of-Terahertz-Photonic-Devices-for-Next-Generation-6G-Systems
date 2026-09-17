@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import os
+import sys
 
 # Import your custom modules
 from src.data.dataset import get_dataloaders
@@ -15,7 +16,7 @@ def train():
     # 2. Load the Data
     # (Adjust the path to point to your op.pt file relative to the project root)
     data_path = "data/comsol/op.pt" 
-    train_loader, val_loader, _ = get_dataloaders(data_path, batch_size=256) # Increased batch size for GPU speed
+    train_loader, val_loader, _ = get_dataloaders(data_path, batch_size=256) 
     
     # 3. Initialize Model, Loss, and Optimizer
     model = ForwardModel().to(device)
@@ -26,8 +27,8 @@ def train():
     # Adam Optimizer (The algorithm that updates the weights)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    # 4. The Training Loop
-    epochs = 10 # Start small to test
+    # 4. The Training Loop (Modified for Micro-Train Sanity Check)
+    epochs = 20
     
     for epoch in range(epochs):
         model.train() # Set model to training mode
@@ -56,14 +57,13 @@ def train():
             
             running_loss += loss.item()
             
-            # Print an update every 10,000 batches
-            if batch_idx % 10000 == 0 and batch_idx > 0:
-                print(f"Epoch {epoch+1}/{epochs} | Batch {batch_idx}/{len(train_loader)} | Loss: {loss.item():.6f}")
+            # Print the loss for EVERY batch during this test
+            print(f"Batch {batch_idx} | Loss: {loss.item():.6f}")
 
-        # 5. Validation Check at the end of each epoch
-        model.eval() # Set model to evaluation mode (turns off BatchNorm/Dropout updates)
+        # 5. Validation Check at the end of each epoch (Will be skipped during micro-train)
+        model.eval() 
         val_loss = 0.0
-        with torch.no_grad(): # Don't track gradients (saves memory)
+        with torch.no_grad(): 
             for geometries, em_targets in val_loader:
                 geometries, em_targets = geometries.to(device), em_targets.to(device)
                 predictions = model(geometries)
