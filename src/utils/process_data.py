@@ -2,48 +2,67 @@ import pandas as pd
 import torch
 import os
 
-def convert_csv_to_tensor(input_csv, output_pt, chunksize=100000, skiprows=9):
+def convert_and_split_csv(input_csv, output_dir='data/comsol', chunksize=100000, skiprows=9):
+    os.makedirs(output_dir, exist_ok=True)
     geom_list = []
     em_list = []
     
     print(f"Processing {input_csv} in chunks...")
     
-    # Read the massive CSV in manageable chunks (100,000 rows at a time)
     for chunk in pd.read_csv(input_csv, chunksize=chunksize, skiprows=skiprows):   
-        # 1. Force all data to be numeric. Any text (like a row of units) becomes 'NaN'
-        chunk = chunk.apply(pd.to_numeric, errors='coerce')
+        chunk = chunk.apply(pd.to_numeric, errors='coerce').dropna()
         
-        # 2. Drop any rows that became 'NaN' (safely deleting text/unit rows)
-        chunk = chunk.dropna()
-        
-        # 3. Extract ONLY L1 and L2 (indices 2 and 3). 
-        # Columns 0, 1, and 4 (X, Y, k) are ignored.
+        # Extract L1 and L2 (indices 2 and 3)
         geometries = chunk.iloc[:, 2:4].values
-        
-        # 4. Extract EM responses (index 5 onwards: lambda, freq, etc.)
+        # Extract EM responses (index 5 onwards)
         em_responses = chunk.iloc[:, 5:].values
         
-        # 5. Convert to float32 tensors
         geom_list.append(torch.tensor(geometries, dtype=torch.float32))
         em_list.append(torch.tensor(em_responses, dtype=torch.float32))
 
-    # Concatenate all lists into single massive tensors
     all_geometries = torch.cat(geom_list, dim=0)
     all_em_responses = torch.cat(em_list, dim=0)
     
-    print(f"Extracted Geometries shape (L1, L2): {all_geometries.shape}")
-    print(f"Extracted EM Responses shape: {all_em_responses.shape}")
+    total_samples = len(all_geometries)
+    print(f"Total dataset size: {total_samples:,} rows")
     
-    # Save as a highly compressed binary PyTorch file
+    # Generate random permutation of indices
+    perm = torch.randperm(total_samples)
+    
+    train_end = int(0.70 * total_samples)
+    val_end = int(0.85 * total_samples)
+    
+    train_idx = perm[:train_end]
+    val_idx = perm[train_end:val_end]
+    test_idx = perm[val_end:]
+    
+    # Slice tensors
+    train_geom, train_em = all_geometries[train_idx], all_em_responses[train_idx]
+    val_geom, val_em = all_geometries[val_idx], all_em_responses[val_idx]
+    test_geom, test_em = all_geometries[test_idx], all_em_responses[test_idx]
+    
+    # Calculate normalization statistics strictly from TRAIN split
+    x_mean, x_std = train_geom.mean(dim=0), train_geom.std(dim=0)
+    y_mean, y_std = train_em.mean(dim=0), train_em.std(dim=0)
+    
+    x_std[x_std == 0] = 1.0
+    y_std[y_std == 0] = 1.0
+    
+    # Save training normalization stats separately
     torch.save({
-        'geometries': all_geometries, 
-        'em_responses': all_em_responses
-    }, output_pt)
+        'x_mean': x_mean, 'x_std': x_std,
+        'y_mean': y_mean, 'y_std': y_std
+    }, os.path.join(output_dir, 'norm_stats.pt'))
     
-    print(f"Saved successfully to {output_pt}!")
+    # Save splits
+    torch.save({'geometries': train_geom, 'em_responses': train_em}, os.path.join(output_dir, 'train.pt'))
+    torch.save({'geometries': val_geom, 'em_responses': val_em}, os.path.join(output_dir, 'val.pt'))
+    torch.save({'geometries': test_geom, 'em_responses': test_em}, os.path.join(output_dir, 'test.pt'))
+    
+    print("Successfully saved train.pt, val.pt, test.pt, and norm_stats.pt!")
 
 if __name__ == "__main__":
-    convert_csv_to_tensor(
+    convert_and_split_csv(
         'data/comsol/parameter_sweep_values (Varied L1, L2 and r = 2Lby 3sqrt(3)).csv',
-        'data/comsol/op.pt'
+        'data/comsol'
     )
