@@ -2,84 +2,81 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import os
-import sys
-
-# Import your custom modules
 from src.data.dataset import get_dataloaders
 from src.models.forward_model import ForwardModel
 
 def train():
-    # 1. Hardware Check: Use the GPU if available
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Training on device: {device}")
+    # 1. Setup Device (uses GPU if you have one, otherwise CPU)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"Training Forward Model on: {device}")
 
-    # 2. Load the Data
-    # (Adjust the path to point to your op.pt file relative to the project root)
-    data_path = "data/comsol/op.pt" 
-    train_loader, val_loader, _ = get_dataloaders(data_path, batch_size=256) 
-    
-    # 3. Initialize Model, Loss, and Optimizer
+    # 2. Load Data (Using a large batch size for your 29.5M row dataset)
+    print("Loading pre-split datasets...")
+    train_loader, val_loader, _ = get_dataloaders(data_dir='data/comsol', batch_size=1024)
+
+    # 3. Initialize Model, Loss function, and Optimizer
     model = ForwardModel().to(device)
-    
-    # Mean Squared Error (Standard for continuous regression problems)
-    criterion = nn.MSELoss() 
-    
-    # Adam Optimizer (The algorithm that updates the weights)
+    criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    # 4. The Training Loop (Modified for Micro-Train Sanity Check)
-    epochs = 20
+    # 4. Training configuration
+    epochs = 10
+    best_val_loss = float('inf')
     
+    # Ensure the save directory exists
+    os.makedirs('models/saved', exist_ok=True)
+    save_path = 'models/saved/forward_model.pth'
+
+    print(f"Starting training for {epochs} epochs...")
     for epoch in range(epochs):
-        model.train() # Set model to training mode
-        running_loss = 0.0
+        model.train()
+        train_loss = 0.0
         
-        # Iterate over the training conveyor belt
-        for batch_idx, (geometries, em_targets) in enumerate(train_loader):
-            # Move data to the GPU
+        for batch_idx, (geometries, em_responses) in enumerate(train_loader):
             geometries = geometries.to(device)
-            em_targets = em_targets.to(device)
+            em_responses = em_responses.to(device)
             
-            # Zero the gradients (clear old memory)
-            optimizer.zero_grad()
-            
-            # Forward pass: predict the EM response
+            # Forward pass: Predict EM response from L1, L2
             predictions = model(geometries)
+            loss = criterion(predictions, em_responses)
             
-            # Calculate how wrong the predictions were
-            loss = criterion(predictions, em_targets)
-            
-            # Backward pass: calculate the updates
+            # Backward pass: compute gradients and update weights
+            optimizer.zero_grad()
             loss.backward()
-            
-            # Step: update the model weights
             optimizer.step()
             
-            running_loss += loss.item()
+            train_loss += loss.item()
             
-            # Print the loss for EVERY batch during this test
-            print(f"Batch {batch_idx} | Loss: {loss.item():.6f}")
-
-        # 5. Validation Check at the end of each epoch (Will be skipped during micro-train)
-        model.eval() 
+            # Print an update every 1,000 batches so you know it's working
+            if batch_idx % 1000 == 0:
+                print(f"Epoch [{epoch+1}/{epochs}] Batch [{batch_idx}/{len(train_loader)}] Loss: {loss.item():.4f}")
+        
+        # Validation Step (Check if the model is actually learning, not just memorizing)
+        model.eval()
         val_loss = 0.0
-        with torch.no_grad(): 
-            for geometries, em_targets in val_loader:
-                geometries, em_targets = geometries.to(device), em_targets.to(device)
-                predictions = model(geometries)
-                loss = criterion(predictions, em_targets)
-                val_loss += loss.item()
+        with torch.no_grad():
+            for geometries, em_responses in val_loader:
+                geometries = geometries.to(device)
+                em_responses = em_responses.to(device)
                 
-        avg_train_loss = running_loss / len(train_loader)
+                predictions = model(geometries)
+                loss = criterion(predictions, em_responses)
+                val_loss += loss.item()
+        
+        # Calculate average losses for this epoch
+        avg_train_loss = train_loss / len(train_loader)
         avg_val_loss = val_loss / len(val_loader)
-        print(f"--- Epoch {epoch+1} Summary ---")
-        print(f"Train Loss: {avg_train_loss:.6f} | Val Loss: {avg_val_loss:.6f}\n")
-
-    # 6. Save the trained model
-    os.makedirs("models/saved", exist_ok=True)
-    save_path = "models/saved/forward_model.pth"
-    torch.save(model.state_dict(), save_path)
-    print(f"Training complete! Model weights saved to {save_path}")
+        
+        print(f"\n--- Epoch {epoch+1} Summary ---")
+        print(f"Train Loss: {avg_train_loss:.6f} | Validation Loss: {avg_val_loss:.6f}")
+        
+        # Save the model only if validation loss improved
+        if avg_val_loss < best_val_loss:
+            best_val_loss = avg_val_loss
+            torch.save(model.state_dict(), save_path)
+            print(f"[*] Improved model saved to {save_path}\n")
+            
+    print("Forward Model Training Complete!")
 
 if __name__ == "__main__":
     train()
