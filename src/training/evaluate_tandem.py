@@ -30,7 +30,7 @@ def evaluate_and_plot():
     backward_model.load_state_dict(torch.load("models/saved/backward_model.pth", map_location=device, weights_only=True))
     backward_model.eval()
 
-    # 3. Get one batch of test data
+    # 3. Get one batch of test data (the unseen 15%)
     true_geom_norm, true_em_norm = next(iter(test_loader))
     true_geom_norm = true_geom_norm.to(device)
     true_em_norm = true_em_norm.to(device)
@@ -55,43 +55,57 @@ def evaluate_and_plot():
     true_em = true_em.cpu().numpy()
     reconstructed_em = reconstructed_em.cpu().numpy()
 
-    # 6. Plotting
-    plt.figure(figsize=(15, 6))
+    # 6. Plotting (2x2 Grid)
+    plt.figure(figsize=(14, 10))
+    plt.suptitle("Tandem Inverse Design Accuracy (Test Set)", fontsize=16)
 
     # Plot A: True vs Predicted L1
-    plt.subplot(1, 3, 1)
-    plt.scatter(true_geom[:, 0], pred_geom[:, 0], alpha=0.5, color='blue')
+    plt.subplot(2, 2, 1)
+    plt.scatter(true_geom[:, 0], pred_geom[:, 0], alpha=0.7, color='blue', s=60)
     plt.plot([true_geom[:, 0].min(), true_geom[:, 0].max()], 
              [true_geom[:, 0].min(), true_geom[:, 0].max()], 'r--', lw=2)
-    plt.xlabel("True L1 (um)")
-    plt.ylabel("Predicted L1 (um)")
-    plt.title("Inverse Design: L1 Accuracy")
+    plt.xlabel("True L1 (μm)")
+    plt.ylabel("Predicted L1 (μm)")
+    plt.title("Geometry: L1")
     plt.grid(True)
 
     # Plot B: True vs Predicted L2
-    plt.subplot(1, 3, 2)
-    plt.scatter(true_geom[:, 1], pred_geom[:, 1], alpha=0.5, color='green')
+    plt.subplot(2, 2, 2)
+    plt.scatter(true_geom[:, 1], pred_geom[:, 1], alpha=0.7, color='green', s=60)
     plt.plot([true_geom[:, 1].min(), true_geom[:, 1].max()], 
              [true_geom[:, 1].min(), true_geom[:, 1].max()], 'r--', lw=2)
-    plt.xlabel("True L2 (um)")
-    plt.ylabel("Predicted L2 (um)")
-    plt.title("Inverse Design: L2 Accuracy")
+    plt.xlabel("True L2 (μm)")
+    plt.ylabel("Predicted L2 (μm)")
+    plt.title("Geometry: L2")
     plt.grid(True)
 
-    # Plot C: Target EM vs Reconstructed EM (Feature 1)
-    plt.subplot(1, 3, 3)
-    plt.scatter(true_em[:, 0], reconstructed_em[:, 0], alpha=0.5, color='purple')
+    # Plot C: Target EM vs Reconstructed f_lower
+    plt.subplot(2, 2, 3)
+    plt.scatter(true_em[:, 0], reconstructed_em[:, 0], alpha=0.7, color='purple', s=60)
     plt.plot([true_em[:, 0].min(), true_em[:, 0].max()], 
              [true_em[:, 0].min(), true_em[:, 0].max()], 'r--', lw=2)
-    plt.xlabel("Target EM Feature 1")
-    plt.ylabel("Reconstructed EM Feature 1")
-    plt.title("Tandem Reconstructed EM")
+    plt.xlabel("Target f_lower (GHz)")
+    plt.ylabel("Reconstructed f_lower (GHz)")
+    plt.title("Bandgap: f_lower")
+    plt.grid(True)
+    
+    # Plot D: Target EM vs Reconstructed f_upper
+    plt.subplot(2, 2, 4)
+    plt.scatter(true_em[:, 1], reconstructed_em[:, 1], alpha=0.7, color='orange', s=60)
+    plt.plot([true_em[:, 1].min(), true_em[:, 1].max()], 
+             [true_em[:, 1].min(), true_em[:, 1].max()], 'r--', lw=2)
+    plt.xlabel("Target f_upper (GHz)")
+    plt.ylabel("Reconstructed f_upper (GHz)")
+    plt.title("Bandgap: f_upper")
     plt.grid(True)
 
-    plt.tight_layout()
-    plt.savefig("models/saved/tandem_evaluation.png", dpi=300)
-    print("Evaluation complete! Plot saved to models/saved/tandem_evaluation.png")
-    plt.show()
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    
+    # Save the plot instead of halting terminal
+    os.makedirs("results", exist_ok=True)
+    plot_path = "results/tandem_evaluation.png"
+    plt.savefig(plot_path)
+    print(f"Plot saved successfully to {plot_path}")
 
 if __name__ == "__main__":
     evaluate_and_plot()
