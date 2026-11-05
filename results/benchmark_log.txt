@@ -1,0 +1,42 @@
+sharp: 63 geometries, oracle LOO MAE [f_lower, f_upper] GHz: [0.0071 0.0774]
+rounded: 61 geometries, oracle LOO MAE [f_lower, f_upper] GHz: [0.0014 0.0086]
+task=edges seed=0 done
+task=edges seed=1 done
+task=edges seed=2 done
+task=edges seed=3 done
+task=edges seed=4 done
+task=edges seed=5 done
+task=edges seed=6 done
+task=edges seed=7 done
+task=edges seed=8 done
+task=edges seed=9 done
+task=gap seed=0 done
+task=gap seed=1 done
+task=gap seed=2 done
+task=gap seed=3 done
+task=gap seed=4 done
+task=gap seed=5 done
+task=gap seed=6 done
+task=gap seed=7 done
+task=gap seed=8 done
+task=gap seed=9 done
+
+task   train    test     method                         err GHz   max GHz  geo MAE um   span um
+edges  both     rounded  Direct inverse NN                0.577      4.38        0.49      0.00
+edges  both     rounded  GP + gradient (multi-start)      0.058      1.56        0.06      0.00
+edges  both     rounded  Tandem NN (Liu 2018)             0.700      2.87        0.82      0.00
+edges  both     sharp    Direct inverse NN                0.537      2.94        0.44      0.00
+edges  both     sharp    GP + gradient (multi-start)      0.060      0.87        0.06      0.00
+edges  both     sharp    Tandem NN (Liu 2018)             0.697      2.79        0.79      0.00
+edges  rounded  rounded  Direct inverse NN                0.508      4.14        0.42      0.00
+edges  rounded  rounded  GP + gradient (multi-start)      0.007      0.06        0.01      0.00
+edges  rounded  rounded  Tandem NN (Liu 2018)             0.642      3.25        0.71      0.00
+gap    both     rounded  Direct inverse NN                1.443     12.31       13.38      0.00
+gap    both     rounded  GP + gradient (multi-start)      0.033      1.17       10.24     32.32
+gap    both     rounded  Tandem NN (Liu 2018)             0.170      1.96       10.61      0.00
+gap    both     sharp    Direct inverse NN                0.633      4.48       11.12      0.00
+gap    both     sharp    GP + gradient (multi-start)      0.007      0.35       11.17     21.82
+gap    both     sharp    Tandem NN (Liu 2018)             0.090      1.06       10.67      0.00
+gap    rounded  rounded  Direct inverse NN                1.671     30.50       14.50      0.00
+gap    rounded  rounded  GP + gradient (multi-start)      0.001      0.04       10.05     31.67
+gap    rounded  rounded  Tandem NN (Liu 2018)             0.165      2.58       10.22      0.00

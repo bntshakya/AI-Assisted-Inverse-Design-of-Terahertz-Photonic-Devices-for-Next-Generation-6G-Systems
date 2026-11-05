@@ -1,0 +1,5 @@
+forward ensemble: test MAE [0.134 0.172] GHz (174 s)
+tandem + CVAE trained (438 s)
+COMSOL correction fitted on 3198 cells (482 s)
+COMSOL-trained ensemble fitted (563 s)
+saved models/optionb/ in 563 s

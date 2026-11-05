@@ -1,0 +1,4 @@
+forward (2 members) test MAE [0.146, 0.187]
+models trained (322 s)
+circle bands: 66 cells (485 s)
+wrote learn/site/web_data.json (3.0 MB) in 488 s

@@ -1,0 +1,122 @@
+{
+  "n_cells": 225,
+  "eps": 8.913996553278825,
+  "reference": "finest setting",
+  "settings": [
+    {
+      "n_grid": 64,
+      "g_cut": 7.0,
+      "n_plane_waves": 177,
+      "seconds_per_cell": 0.088,
+      "used_in_project": false,
+      "change_vs_finest_mean_GHz": [
+        1.338,
+        1.791
+      ],
+      "change_vs_finest_max_GHz": [
+        3.753,
+        5.471
+      ],
+      "mae_vs_comsol_triangles_GHz": [
+        1.415,
+        1.301
+      ],
+      "mae_vs_comsol_freeform_GHz": [
+        0.567,
+        1.568
+      ]
+    },
+    {
+      "n_grid": 96,
+      "g_cut": 9.0,
+      "n_plane_waves": 301,
+      "seconds_per_cell": 0.169,
+      "used_in_project": false,
+      "change_vs_finest_mean_GHz": [
+        0.743,
+        0.937
+      ],
+      "change_vs_finest_max_GHz": [
+        2.19,
+        2.782
+      ],
+      "mae_vs_comsol_triangles_GHz": [
+        1.051,
+        0.501
+      ],
+      "mae_vs_comsol_freeform_GHz": [
+        0.438,
+        0.728
+      ]
+    },
+    {
+      "n_grid": 96,
+      "g_cut": 11.0,
+      "n_plane_waves": 439,
+      "seconds_per_cell": 0.216,
+      "used_in_project": true,
+      "change_vs_finest_mean_GHz": [
+        0.467,
+        0.59
+      ],
+      "change_vs_finest_max_GHz": [
+        1.624,
+        1.907
+      ],
+      "mae_vs_comsol_triangles_GHz": [
+        0.874,
+        0.298
+      ],
+      "mae_vs_comsol_freeform_GHz": [
+        0.51,
+        0.399
+      ]
+    },
+    {
+      "n_grid": 128,
+      "g_cut": 14.0,
+      "n_plane_waves": 693,
+      "seconds_per_cell": 0.447,
+      "used_in_project": false,
+      "change_vs_finest_mean_GHz": [
+        0.213,
+        0.264
+      ],
+      "change_vs_finest_max_GHz": [
+        1.006,
+        0.917
+      ],
+      "mae_vs_comsol_triangles_GHz": [
+        0.71,
+        0.419
+      ],
+      "mae_vs_comsol_freeform_GHz": [
+        0.658,
+        0.246
+      ]
+    },
+    {
+      "n_grid": 160,
+      "g_cut": 17.0,
+      "n_plane_waves": 1011,
+      "seconds_per_cell": 1.009,
+      "used_in_project": false,
+      "change_vs_finest_mean_GHz": [
+        0.0,
+        0.0
+      ],
+      "change_vs_finest_max_GHz": [
+        0.0,
+        0.0
+      ],
+      "mae_vs_comsol_triangles_GHz": [
+        0.671,
+        0.492
+      ],
+      "mae_vs_comsol_freeform_GHz": [
+        0.789,
+        0.315
+      ]
+    }
+  ]
+}

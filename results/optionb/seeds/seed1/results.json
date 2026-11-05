@@ -1,0 +1,220 @@
+{
+  "device": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "learning_curve": [
+    {
+      "n_train": 125,
+      "nn_mae": [
+        4.064,
+        2.978
+      ],
+      "nn_s": 22.8,
+      "gp_mae": [
+        2.785,
+        1.974
+      ],
+      "gp_s": 2.1
+    },
+    {
+      "n_train": 250,
+      "nn_mae": [
+        1.788,
+        1.764
+      ],
+      "nn_s": 39.0,
+      "gp_mae": [
+        1.83,
+        1.211
+      ],
+      "gp_s": 13.8
+    },
+    {
+      "n_train": 500,
+      "nn_mae": [
+        0.965,
+        1.13
+      ],
+      "nn_s": 54.9,
+      "gp_mae": [
+        1.29,
+        0.668
+      ],
+      "gp_s": 29.6
+    },
+    {
+      "n_train": 1000,
+      "nn_mae": [
+        0.498,
+        0.711
+      ],
+      "nn_s": 54.4,
+      "gp_mae": [
+        0.877,
+        0.498
+      ],
+      "gp_s": 118.9
+    },
+    {
+      "n_train": 2000,
+      "nn_mae": [
+        0.328,
+        0.458
+      ],
+      "nn_s": 56.8
+    },
+    {
+      "n_train": 5400,
+      "nn_mae": [
+        0.239,
+        0.306
+      ],
+      "nn_s": 61.7
+    }
+  ],
+  "forward_train_s": 199.1,
+  "forward_test": {
+    "n_test": 600,
+    "mae_all": [
+      0.141,
+      0.189
+    ],
+    "mae_gapped": [
+      0.147,
+      0.245
+    ],
+    "max_err": [
+      2.41,
+      3.52
+    ],
+    "gap_mae": 0.217,
+    "by_dataset": {
+      "pwe_fourier": [
+        0.123,
+        0.167
+      ],
+      "pwe_library": [
+        0.176,
+        0.229
+      ]
+    },
+    "corr_std_abs_err": 0.778
+  },
+  "multifidelity": {
+    "n": 157,
+    "datasets": {
+      "comsol_circle": 33,
+      "comsol_rounded": 61,
+      "comsol_sharp": 63
+    },
+    "pwe_raw_mae": [
+      0.885,
+      0.321
+    ],
+    "pwe_plus_gp_cv_mae": [
+      0.09,
+      0.321
+    ],
+    "nn_raw_mae": [
+      0.681,
+      0.642
+    ],
+    "nn_plus_gp_cv_mae": [
+      0.271,
+      0.641
+    ],
+    "gap_mae": {
+      "pwe_raw": 0.9,
+      "pwe_plus_gp": 0.289
+    },
+    "leave_family_out": {
+      "comsol_circle": {
+        "pwe_raw_mae": [
+          0.921,
+          0.393
+        ],
+        "pwe_plus_gp_mae": [
+          0.13,
+          0.489
+        ]
+      },
+      "comsol_rounded": {
+        "pwe_raw_mae": [
+          0.881,
+          0.172
+        ],
+        "pwe_plus_gp_mae": [
+          1.133,
+          0.212
+        ]
+      },
+      "comsol_sharp": {
+        "pwe_raw_mae": [
+          0.87,
+          0.427
+        ],
+        "pwe_plus_gp_mae": [
+          1.762,
+          0.431
+        ]
+      }
+    }
+  },
+  "inverse": {
+    "tandem": {
+      "valid_design_found": "100/100",
+      "verified_mae_GHz": [
+        0.098,
+        0.171
+      ],
+      "verified_median_GHz": [
+        0.064,
+        0.089
+      ],
+      "success_rate_within_1GHz": 0.99,
+      "seconds_per_target": 0.0
+    },
+    "cvae": {
+      "valid_design_found": "100/100",
+      "verified_mae_GHz": [
+        0.33,
+        0.445
+      ],
+      "verified_median_GHz": [
+        0.271,
+        0.272
+      ],
+      "success_rate_within_1GHz": 0.91,
+      "seconds_per_target": 0.0001,
+      "distinct_verified_designs_per_target": 5.5
+    },
+    "multistart": {
+      "valid_design_found": "100/100",
+      "verified_mae_GHz": [
+        0.19,
+        0.356
+      ],
+      "verified_median_GHz": [
+        0.106,
+        0.176
+      ],
+      "success_rate_within_1GHz": 0.92,
+      "seconds_per_target": 0.589,
+      "distinct_verified_designs_per_target": 7.2
+    },
+    "cvae_refine": {
+      "valid_design_found": "100/100",
+      "verified_mae_GHz": [
+        0.098,
+        0.252
+      ],
+      "verified_median_GHz": [
+        0.06,
+        0.106
+      ],
+      "success_rate_within_1GHz": 0.96,
+      "seconds_per_target": 0.199,
+      "distinct_verified_designs_per_target": 7.9
+    }
+  },
+  "seed": 1,
+  "total_minutes": 20.4
+}

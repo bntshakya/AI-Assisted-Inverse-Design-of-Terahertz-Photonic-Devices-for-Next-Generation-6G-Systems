@@ -1,0 +1,27 @@
+{
+  "eps_si": 8.913996553278825,
+  "n_si": 2.9856316841296455,
+  "n_geometries": 128,
+  "per_family": {
+    "sharp": {
+      "n_gapped": 63,
+      "MAE_f_lower_GHz": 0.8701928747260194,
+      "MAE_f_upper_GHz": 0.4271306211657787,
+      "MAE_gap_GHz": 1.013540404951401,
+      "bias_f_lower_GHz": -0.867097872288702,
+      "bias_f_upper_GHz": -0.08941404088132851,
+      "bias_gap_GHz": 0.7776838314073734,
+      "corr_gap": 0.9970131684008092
+    },
+    "rounded": {
+      "n_gapped": 61,
+      "MAE_f_lower_GHz": 0.8810105868966848,
+      "MAE_f_upper_GHz": 0.17223943134130792,
+      "MAE_gap_GHz": 0.9834090984561052,
+      "bias_f_lower_GHz": 0.8810105868966848,
+      "bias_f_upper_GHz": -0.10239851155942042,
+      "bias_gap_GHz": -0.9834090984561052,
+      "corr_gap": 0.9999305843591513
+    }
+  }
+}

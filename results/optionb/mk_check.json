@@ -1,0 +1,100 @@
+{
+  "eps_si": 8.913996553278825,
+  "comsol": {
+    "n_cells": 128,
+    "n_k": 281,
+    "max_dev_GHz": 0.0,
+    "lower_at": {
+      "2.0": 128
+    },
+    "upper_at": {
+      "1.0": 64,
+      "2.0": 64
+    },
+    "upper_at_rounded": {
+      "1.0": 63,
+      "2.0": 1
+    },
+    "upper_at_sharp": {
+      "2.0": 63,
+      "1.0": 1
+    }
+  },
+  "pwe_mixed": {
+    "n_cells": 658,
+    "max_dev_GHz": 0.0027244569988056,
+    "n_circle_circle": 26,
+    "n_with_a_circle": 142,
+    "n_fourier_fourier": 377,
+    "lower_at": {
+      "K": 658,
+      "M": 0
+    },
+    "upper_at": {
+      "M": 613,
+      "K": 45
+    }
+  },
+  "pwe_circles": {
+    "n_cells": 80,
+    "r_range_um": [
+      20,
+      95
+    ],
+    "path_step": 0.02,
+    "wedge_points": 65,
+    "max_dev_GHz": 6.912159733474255e-11,
+    "lower_at": {
+      "2.0": 80
+    },
+    "upper_at": {
+      "1.0": 80
+    },
+    "n_no_gap": 27,
+    "gap_max_GHz": 166.88615483621004
+  },
+  "examples": [
+    {
+      "name": "rounded triangles, L1 = 189, L2 = 91 um",
+      "k_lower": 2.0,
+      "k_upper": 1.0,
+      "f_lower": 311.0155657893475,
+      "f_upper": 353.58810435144596
+    },
+    {
+      "name": "circles, R_A = 70, R_B = 35 um",
+      "k_lower": 2.0,
+      "k_upper": 1.0,
+      "f_lower": 324.35400689000915,
+      "f_upper": 375.76553870216355
+    },
+    {
+      "name": "freeform (no mirror symmetry)",
+      "k_lower": 2.0,
+      "k_upper": 1.0,
+      "f_lower": 331.137257237971,
+      "f_upper": 347.01982822545006
+    }
+  ],
+  "wedge_map": {
+    "points": 324,
+    "band1_max_at": [
+      0.008636680834611115,
+      0.014959170014302827
+    ],
+    "band2_min_at": [
+      0.012955021251916672,
+      0.0074795850071514135
+    ],
+    "K": [
+      0.01727336166922223,
+      0.0
+    ],
+    "M": [
+      0.012955021251916672,
+      0.007479585007151414
+    ]
+  },
+  "n_pwe_total": 738,
+  "n_circle_pairs_total": 106
+}

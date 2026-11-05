@@ -1,0 +1,21 @@
+4000 valid cells from 7045 draws (57% accepted)
+  250/4000  13 s
+  500/4000  22 s
+  750/4000  30 s
+  1000/4000  39 s
+  1250/4000  49 s
+  1500/4000  59 s
+  1750/4000  68 s
+  2000/4000  77 s
+  2250/4000  88 s
+  2500/4000  97 s
+  2750/4000  107 s
+  3000/4000  117 s
+  3250/4000  128 s
+  3500/4000  137 s
+  3750/4000  148 s
+  4000/4000  160 s
+solved 4000 cells in 160 s with 10 workers, eps = 8.914
+wrote data/pwe\fourier.csv: 4000 cells, 2518 with gap > 0.1 GHz; gap -27.4 to 80.0 GHz
+  path check on 118 cells: band edge moved by > 0.1 GHz in 0; max shift lower 0.00, upper -0.00 GHz
+  zone check on 118 cells: band edge moved by > 0.1 GHz in 0; max shift lower 0.00, upper 0.00 GHz

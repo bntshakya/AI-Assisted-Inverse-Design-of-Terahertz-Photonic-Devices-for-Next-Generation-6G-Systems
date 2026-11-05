@@ -1,0 +1,8 @@
+global_eval_sharp_batch_ALL.csv: 4012 rows, parameters ['L1 (m)', 'L2 (m)'], k column 'k', value 'Frequency (GHz)'
+1003 shapes, 1003 with a gap; gap 0.4 to 40.5 GHz
+  check 147.01/105.01 um: new - earlier COMSOL = -0.257 / -0.148 GHz (f_lower / f_upper)
+  check 168.01/119.01 um: new - earlier COMSOL = -0.258 / -0.175 GHz (f_lower / f_upper)
+  check 189.01/91.00 um: new - earlier COMSOL = -0.432 / -0.134 GHz (f_lower / f_upper)
+1000 new shapes after removing the check cells
+PWE - COMSOL on 1000 gapped shapes: mean [-0.6   0.17], MAE [0.61 0.4 ], max [2.16 3.29] GHz (f_lower, f_upper); gap MAE 0.88 GHz
+wrote data/comsol/extra_sharp_lhs.csv

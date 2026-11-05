@@ -1,0 +1,210 @@
+{
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "n": 5,
+  "forward_mae_all": {
+    "mean": [
+      0.1414,
+      0.1824
+    ],
+    "std": [
+      0.0074,
+      0.0133
+    ]
+  },
+  "forward_gap_mae": {
+    "mean": 0.217,
+    "std": 0.0122
+  },
+  "mf_pwe_raw_mae": {
+    "mean": [
+      0.885,
+      0.321
+    ],
+    "std": [
+      0.0,
+      0.0
+    ]
+  },
+  "mf_pwe_plus_gp_cv_mae": {
+    "mean": [
+      0.09,
+      0.321
+    ],
+    "std": [
+      0.0,
+      0.0
+    ]
+  },
+  "mf_nn_raw_mae": {
+    "mean": [
+      0.7898,
+      0.5534
+    ],
+    "std": [
+      0.1488,
+      0.0521
+    ]
+  },
+  "mf_gap_raw": {
+    "mean": 0.9,
+    "std": 0.0
+  },
+  "mf_gap_gp": {
+    "mean": 0.289,
+    "std": 0.0
+  },
+  "learning_curve": {
+    "125": {
+      "nn": {
+        "mean": 3.4551,
+        "std": 0.7762
+      },
+      "gp": {
+        "mean": 1.9727,
+        "std": 0.2692
+      }
+    },
+    "250": {
+      "nn": {
+        "mean": 1.5645,
+        "std": 0.2741
+      },
+      "gp": {
+        "mean": 1.3033,
+        "std": 0.1418
+      }
+    },
+    "500": {
+      "nn": {
+        "mean": 1.0008,
+        "std": 0.1211
+      },
+      "gp": {
+        "mean": 0.9683,
+        "std": 0.0289
+      }
+    },
+    "1000": {
+      "nn": {
+        "mean": 0.5814,
+        "std": 0.052
+      },
+      "gp": {
+        "mean": 0.664,
+        "std": 0.0561
+      }
+    },
+    "2000": {
+      "nn": {
+        "mean": 0.3807,
+        "std": 0.0242
+      }
+    },
+    "5400": {
+      "nn": {
+        "mean": 0.2751,
+        "std": 0.0143
+      }
+    }
+  },
+  "inverse": {
+    "tandem": {
+      "success_rate_within_1GHz": {
+        "mean": 0.99,
+        "std": 0.0071
+      },
+      "verified_mae_GHz": {
+        "mean": [
+          0.0776,
+          0.1176
+        ],
+        "std": [
+          0.0142,
+          0.0346
+        ]
+      },
+      "seconds_per_target": {
+        "mean": 0.0001,
+        "std": 0.0001
+      }
+    },
+    "cvae": {
+      "success_rate_within_1GHz": {
+        "mean": 0.934,
+        "std": 0.0207
+      },
+      "verified_mae_GHz": {
+        "mean": [
+          0.3316,
+          0.3634
+        ],
+        "std": [
+          0.012,
+          0.0501
+        ]
+      },
+      "seconds_per_target": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "distinct": {
+        "mean": 5.06,
+        "std": 0.3647
+      }
+    },
+    "multistart": {
+      "success_rate_within_1GHz": {
+        "mean": 0.918,
+        "std": 0.0349
+      },
+      "verified_mae_GHz": {
+        "mean": [
+          0.1824,
+          0.3554
+        ],
+        "std": [
+          0.035,
+          0.0325
+        ]
+      },
+      "seconds_per_target": {
+        "mean": 0.5869,
+        "std": 0.0032
+      },
+      "distinct": {
+        "mean": 7.52,
+        "std": 0.3114
+      }
+    },
+    "cvae_refine": {
+      "success_rate_within_1GHz": {
+        "mean": 0.968,
+        "std": 0.0148
+      },
+      "verified_mae_GHz": {
+        "mean": [
+          0.086,
+          0.205
+        ],
+        "std": [
+          0.0152,
+          0.0413
+        ]
+      },
+      "seconds_per_target": {
+        "mean": 0.198,
+        "std": 0.0012
+      },
+      "distinct": {
+        "mean": 7.96,
+        "std": 0.0548
+      }
+    }
+  }
+}

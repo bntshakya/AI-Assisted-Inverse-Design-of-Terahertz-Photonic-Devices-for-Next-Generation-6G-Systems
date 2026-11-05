@@ -1,0 +1,146 @@
+{
+  "edges/train=both/test=rounded/Direct inverse NN": {
+    "err_mean": 0.5767540278999416,
+    "err_max": 4.383479137405743,
+    "geo_mae_um": 0.4908922676844247,
+    "span_um": 0.0,
+    "ms_per_target": 0.0,
+    "n": 160
+  },
+  "edges/train=both/test=rounded/GP + gradient (multi-start)": {
+    "err_mean": 0.057765062466841856,
+    "err_max": 1.559026683229149,
+    "geo_mae_um": 0.056884528813759425,
+    "span_um": 0.00032756858489273454,
+    "ms_per_target": 238.97380232810974,
+    "n": 160
+  },
+  "edges/train=both/test=rounded/Tandem NN (Liu 2018)": {
+    "err_mean": 0.7003986506639585,
+    "err_max": 2.865017622640039,
+    "geo_mae_um": 0.8204425787002873,
+    "span_um": 0.0,
+    "ms_per_target": 0.043989717960357666,
+    "n": 160
+  },
+  "edges/train=both/test=sharp/Direct inverse NN": {
+    "err_mean": 0.5365938889197934,
+    "err_max": 2.9368526843748555,
+    "geo_mae_um": 0.44175281773760977,
+    "span_um": 0.0,
+    "ms_per_target": 0.003725290298461914,
+    "n": 160
+  },
+  "edges/train=both/test=sharp/GP + gradient (multi-start)": {
+    "err_mean": 0.060355432213684425,
+    "err_max": 0.8692715176781576,
+    "geo_mae_um": 0.05695943070894174,
+    "span_um": 0.0003185440711813925,
+    "ms_per_target": 232.35305547714233,
+    "n": 160
+  },
+  "edges/train=both/test=sharp/Tandem NN (Liu 2018)": {
+    "err_mean": 0.6968573354395662,
+    "err_max": 2.790637039884757,
+    "geo_mae_um": 0.7936562132267507,
+    "span_um": 0.0,
+    "ms_per_target": 0.012531876564025879,
+    "n": 160
+  },
+  "edges/train=rounded/test=rounded/Direct inverse NN": {
+    "err_mean": 0.5077876232412546,
+    "err_max": 4.135746557025925,
+    "geo_mae_um": 0.4170350715292178,
+    "span_um": 0.0,
+    "ms_per_target": 0.05870908498764038,
+    "n": 160
+  },
+  "edges/train=rounded/test=rounded/GP + gradient (multi-start)": {
+    "err_mean": 0.006587406039744792,
+    "err_max": 0.06329807430000756,
+    "geo_mae_um": 0.00665530680915487,
+    "span_um": 0.0004075349833747133,
+    "ms_per_target": 271.82983458042145,
+    "n": 160
+  },
+  "edges/train=rounded/test=rounded/Tandem NN (Liu 2018)": {
+    "err_mean": 0.6424183312113293,
+    "err_max": 3.25365632402071,
+    "geo_mae_um": 0.7074450289245501,
+    "span_um": 0.0,
+    "ms_per_target": 0.012537837028503418,
+    "n": 160
+  },
+  "gap/train=both/test=rounded/Direct inverse NN": {
+    "err_mean": 1.443226095930981,
+    "err_max": 12.313836240350895,
+    "geo_mae_um": 13.381048548339942,
+    "span_um": 0.0,
+    "ms_per_target": 0.012578070163726807,
+    "n": 160
+  },
+  "gap/train=both/test=rounded/GP + gradient (multi-start)": {
+    "err_mean": 0.03294184074858464,
+    "err_max": 1.1712834511796473,
+    "geo_mae_um": 10.241414924980003,
+    "span_um": 32.31960674995354,
+    "ms_per_target": 308.4265932440758,
+    "n": 160
+  },
+  "gap/train=both/test=rounded/Tandem NN (Liu 2018)": {
+    "err_mean": 0.17034310296987626,
+    "err_max": 1.9626040738365873,
+    "geo_mae_um": 10.611710330453556,
+    "span_um": 0.0,
+    "ms_per_target": 0.012534856796264648,
+    "n": 160
+  },
+  "gap/train=both/test=sharp/Direct inverse NN": {
+    "err_mean": 0.6328965239357703,
+    "err_max": 4.477345115646131,
+    "geo_mae_um": 11.121669296564146,
+    "span_um": 0.0,
+    "ms_per_target": 0.025126338005065918,
+    "n": 160
+  },
+  "gap/train=both/test=sharp/GP + gradient (multi-start)": {
+    "err_mean": 0.0071146727638158325,
+    "err_max": 0.3531525918654097,
+    "geo_mae_um": 11.169000526363074,
+    "span_um": 21.81718888181627,
+    "ms_per_target": 351.81030333042145,
+    "n": 160
+  },
+  "gap/train=both/test=sharp/Tandem NN (Liu 2018)": {
+    "err_mean": 0.08993874746796919,
+    "err_max": 1.0606158027982246,
+    "geo_mae_um": 10.668471190259847,
+    "span_um": 0.0,
+    "ms_per_target": 0.02828538417816162,
+    "n": 160
+  },
+  "gap/train=rounded/test=rounded/Direct inverse NN": {
+    "err_mean": 1.6708499057400197,
+    "err_max": 30.499252002387095,
+    "geo_mae_um": 14.499686255953668,
+    "span_um": 0.0,
+    "ms_per_target": 0.02677440643310547,
+    "n": 160
+  },
+  "gap/train=rounded/test=rounded/GP + gradient (multi-start)": {
+    "err_mean": 0.0009592410972032895,
+    "err_max": 0.040914029956184095,
+    "geo_mae_um": 10.048755871541946,
+    "span_um": 31.66928542908007,
+    "ms_per_target": 316.1732167005539,
+    "n": 160
+  },
+  "gap/train=rounded/test=rounded/Tandem NN (Liu 2018)": {
+    "err_mean": 0.165127437427833,
+    "err_max": 2.5773304916747293,
+    "geo_mae_um": 10.22101360449124,
+    "span_um": 0.0,
+    "ms_per_target": 0.012309849262237549,
+    "n": 160
+  }
+}

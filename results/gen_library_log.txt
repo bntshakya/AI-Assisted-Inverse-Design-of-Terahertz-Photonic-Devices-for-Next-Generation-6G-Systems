@@ -1,0 +1,13 @@
+2000 valid cells from 3156 draws (63% accepted)
+  250/2000  12 s
+  500/2000  20 s
+  750/2000  26 s
+  1000/2000  33 s
+  1250/2000  43 s
+  1500/2000  52 s
+  1750/2000  61 s
+  2000/2000  70 s
+solved 2000 cells in 70 s with 10 workers, eps = 8.914
+wrote data/pwe\library.csv: 2000 cells, 1241 with gap > 0.1 GHz; gap -25.8 to 73.9 GHz
+  path check on 60 cells: band edge moved by > 0.1 GHz in 0; max shift lower 0.00, upper -0.00 GHz
+  zone check on 60 cells: band edge moved by > 0.1 GHz in 0; max shift lower 0.00, upper 0.00 GHz

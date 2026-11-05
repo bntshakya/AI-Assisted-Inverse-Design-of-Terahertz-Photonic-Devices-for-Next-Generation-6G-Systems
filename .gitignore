@@ -1,2 +1,4 @@
 data/comsol
 .venv/
+__pycache__/
+*.bak

@@ -1,0 +1,1 @@
+{'mean_signed_shift_GHz': [0.467, 0.58], 'spread_of_shift_GHz': [0.308, 0.315], 'gap_change_mean_abs_GHz': 0.311, 'gap_change_max_abs_GHz': 1.311, 'frac_cells_shift_same_sign': [1.0, 0.96]}

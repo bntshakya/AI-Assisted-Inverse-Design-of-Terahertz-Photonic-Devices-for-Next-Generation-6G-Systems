@@ -2,6 +2,8 @@ import pandas as pd
 import torch
 import os
 
+from process_bands import count_header_lines
+
 def extract_bandgap_features(input_csv, output_dir='data/comsol'):
     """
     Reads the COMSOL mesh export, drops redundant spatial nodes (X, Y),
@@ -16,7 +18,8 @@ def extract_bandgap_features(input_csv, output_dir='data/comsol'):
     
     # Columns: % X, Y, L1, L2, k, lambda, emw.freq (GHz)
     # We usecols 2 (L1), 3 (L2), 4 (k), 6 (freq)
-    for i, chunk in enumerate(pd.read_csv(input_csv, skiprows=9, header=None, 
+    # header length differs between exports (9 lines rounded, 2 lines sharp)
+    for i, chunk in enumerate(pd.read_csv(input_csv, skiprows=count_header_lines(input_csv), header=None, 
                                           usecols=[2, 3, 4, 6], 
                                           names=['L1', 'L2', 'k', 'freq'],
                                           chunksize=chunksize)):

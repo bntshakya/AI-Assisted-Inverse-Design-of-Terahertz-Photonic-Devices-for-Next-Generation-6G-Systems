@@ -1,0 +1,18 @@
+{
+  "file": "parameter_sweep_values (Varied L1, L2 and r = 2Lby 3sqrt(3)) (k=1,2).csv",
+  "corner": 1,
+  "n_cells": 64,
+  "n_k_new": 2,
+  "n_k_old": 281,
+  "mesh_nodes_per_solution_new": 5482,
+  "max_abs_diff_GHz": {
+    "lower": 0.020870000000002165,
+    "upper": 0.029623000000015054,
+    "gap": 0.012403000000006159
+  },
+  "mean_diff_GHz": {
+    "lower": 0.016487578124999125,
+    "upper": 0.025289250000000152,
+    "gap": 0.008801671875001027
+  }
+}

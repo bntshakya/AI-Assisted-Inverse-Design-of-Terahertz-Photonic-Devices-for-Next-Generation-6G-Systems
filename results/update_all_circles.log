@@ -1,0 +1,146 @@
+up to date: data/comsol/extra_fourier.csv
+
+=== import fourier (1 file(s)) ===
+$ src/comsol/import_global_eval.py data/comsol/new\global_eval_circles_fourier_model.csv --family fourier --name circle_lhs
+global_eval_circles_fourier_model.csv: 4012 rows, parameters ['rA0 (m)', 'c3A (m)', 's3A (m)', 'c6A (m)', 's6A (m)', 'rB0 (m)', 'c3B (m)', 's3B (m)', 'c6B (m)', 's6B (m)'], k column 'k', value 'Frequency (GHz)'
+1003 shapes, 819 with a gap; gap -9.9 to 42.8 GHz
+  check 46.67/32.67 um: new - earlier COMSOL = -0.005 / -0.011 GHz (f_lower / f_upper)
+  check 53.67/42.00 um: new - earlier COMSOL = -0.012 / -0.019 GHz (f_lower / f_upper)
+  check 60.67/35.00 um: new - earlier COMSOL = -0.009 / -0.023 GHz (f_lower / f_upper)
+1000 new shapes after removing the check cells
+PWE - COMSOL on 817 gapped shapes: mean [0.95 0.4 ], MAE [0.95 0.4 ], max [1.07 0.61] GHz (f_lower, f_upper); gap MAE 0.54 GHz
+wrote data/comsol/extra_circle_lhs.csv
+--- done in 2.9 min
+up to date: data/comsol/extra_sharp_lhs.csv
+up to date: data/comsol/extra_rounded_lhs2.csv
+up to date: data/comsol/extra_verify.csv
+
+=== compare AI designs with their targets ===
+$ src/comsol/compare_verify.py
+ id                      kind    target             PWE          COMSOL  COMSOL - target lower  COMSOL - target upper
+v00 check (already in COMSOL) 300 / 330 300.11 / 330.15 299.10 / 330.25                  -0.90                   0.25
+v01 check (already in COMSOL) 300 / 330 299.99 / 330.00 299.11 / 330.06                  -0.89                   0.06
+v02                new design 300 / 330 299.99 / 329.99 298.97 / 329.99                  -1.03                  -0.01
+v03                new design 300 / 330 299.93 / 329.89 299.04 / 329.60                  -0.96                  -0.40
+v04                new design 300 / 330 299.95 / 329.87 298.95 / 329.52                  -1.05                  -0.48
+v05                new design 305 / 325 305.08 / 325.01 304.17 / 325.13                  -0.83                   0.13
+v06                new design 305 / 325 305.07 / 325.17 304.44 / 325.30                  -0.56                   0.30
+v07                new design 305 / 325 305.07 / 325.14 304.54 / 325.66                  -0.46                   0.66
+v08                new design 310 / 340 310.04 / 340.06 309.24 / 339.77                  -0.76                  -0.23
+v09                new design 310 / 340 310.06 / 340.06 309.22 / 339.98                  -0.78                  -0.02
+v10                new design 310 / 340 309.92 / 339.85 309.38 / 339.96                  -0.62                  -0.04
+v11                new design 320 / 335 320.10 / 335.23 319.76 / 335.28                  -0.24                   0.28
+v12                new design 320 / 335 320.05 / 335.06 319.31 / 335.24                  -0.69                   0.24
+v13                new design 320 / 335 319.93 / 335.07 319.36 / 335.42                  -0.64                   0.42
+
+12 new designs: 10 within 1 GHz of the target in COMSOL (worst 1.05 GHz, mean 0.74 GHz)
+--- done in 0.0 min
+
+=== final COMSOL study (about 35 min) ===
+$ src/shapes/final_comsol_study.py
+PWE vs COMSOL on 3267 gapped cells: [0.789, 0.342] GHz
+multi-fidelity done (1.3 min): all [0.14, 0.23]
+  seed 0 fold 0 done (10.6 min)
+  seed 0 fold 1 done (13.4 min)
+  seed 0 fold 2 done (16.4 min)
+  seed 0 fold 3 done (18.4 min)
+  seed 0 fold 4 done (20.2 min)
+seed 0 {'pwe_solver': [0.446, 0.432], 'nn_pwe': [0.496, 0.365], 'gp_comsol_free': [0.742, 0.23], 'gp_comsol_all': [1.579, 0.274], 'nn_comsol_free': [0.311, 0.225], 'nn_comsol_all': [0.426, 0.318], 'nn_pwe+corr': [0.213, 0.295], 'solver+corr': [0.155, 0.463]}
+  seed 1 fold 0 done (24.1 min)
+  seed 1 fold 1 done (26.0 min)
+  seed 1 fold 2 done (27.8 min)
+  seed 1 fold 3 done (29.6 min)
+  seed 1 fold 4 done (31.3 min)
+seed 1 {'pwe_solver': [0.446, 0.432], 'nn_pwe': [0.493, 0.364], 'gp_comsol_free': [0.747, 0.237], 'gp_comsol_all': [1.676, 0.286], 'nn_comsol_free': [0.32, 0.227], 'nn_comsol_all': [0.412, 0.305], 'nn_pwe+corr': [0.206, 0.305], 'solver+corr': [0.153, 0.463]}
+  seed 2 fold 0 done (35.1 min)
+  seed 2 fold 1 done (36.9 min)
+  seed 2 fold 2 done (38.7 min)
+  seed 2 fold 3 done (40.5 min)
+  seed 2 fold 4 done (42.3 min)
+seed 2 {'pwe_solver': [0.446, 0.432], 'nn_pwe': [0.494, 0.353], 'gp_comsol_free': [0.766, 0.229], 'gp_comsol_all': [1.646, 0.286], 'nn_comsol_free': [0.314, 0.224], 'nn_comsol_all': [0.407, 0.307], 'nn_pwe+corr': [0.212, 0.295], 'solver+corr': [0.155, 0.463]}
+{
+ "pwe_solver": [
+  0.446,
+  0.432
+ ],
+ "nn_pwe": [
+  0.495,
+  0.361
+ ],
+ "gp_comsol_free": [
+  0.752,
+  0.232
+ ],
+ "gp_comsol_all": [
+  1.633,
+  0.282
+ ],
+ "nn_comsol_free": [
+  0.315,
+  0.226
+ ],
+ "nn_comsol_all": [
+  0.415,
+  0.31
+ ],
+ "nn_pwe+corr": [
+  0.21,
+  0.298
+ ],
+ "solver+corr": [
+  0.154,
+  0.463
+ ]
+}
+done in 42.3 min -> results/optionb/final_comsol.json
+--- done in 42.5 min
+
+=== save networks for design.py and the app (about 12 min) ===
+$ src/shapes/save_models.py
+forward ensemble: test MAE [0.134 0.172] GHz (198 s)
+tandem + CVAE trained (518 s)
+COMSOL correction fitted on 4198 cells (585 s)
+COMSOL-trained ensemble fitted (689 s)
+saved models/optionb/ in 689 s
+--- done in 11.5 min
+
+=== final numbers ===
+$ src/shapes/make_final_numbers.py
+wrote ../Report/final/numbers.tex, results/optionb/final_numbers.json, FINAL_NUMBERS.md (79 numbers)
+verdict: With 1,007 freeform COMSOL cells, a model trained on COMSOL data alone has caught up a lot (a network on the freeform COMSOL cells: 0.27 GHz, mean of both edges, down from 1.79 GHz with 97 cells), but PWE plus correction is still the most accurate (0.25 GHz). The cheap PWE data remain useful; COMSOL data are best spent correcting them.
+--- done in 0.0 min
+
+=== final figures ===
+$ src/shapes/make_final_figures.py
+wrote comsol_vs_pwe.png
+figures written and copied to ../Report/final/figures
+--- done in 0.1 min
+
+=== poster ===
+$ src/shapes/make_poster.py
+wrote ../Report/final/254161023_MTP1_Poster.pdf
+--- done in 0.0 min
+--- report: ..\Report\final\254161023_MTP1_Report.pdf
+
+=== study guide PDF ===
+$ src/shapes/build_guide.py
+wrote docs/OptionB_Study_Guide.pdf
+--- done in 0.1 min
+
+=== PWE cheat sheet ===
+$ src/shapes/build_pwe_cheatsheet.py
+wrote docs/PWE_Cheat_Sheet.pdf
+--- done in 0.0 min
+
+=== website numbers ===
+$ learn/patch_site_numbers.py
+patched learn/site/web_data.json (3.1 MB): final_numbers, final, verify
+--- done in 0.0 min
+
+=== offline website file ===
+$ learn/make_offline_site.py
+wrote docs/Valley_Crystal_Study_Lab.html (3.8 MB)
+--- done in 0.0 min
+
+all done in 57 min. Report and poster: ../Report/final/. Offline website: docs/Valley_Crystal_Study_Lab.html. The online (claude.ai) copy still needs republishing by Claude.
+EXIT 0
