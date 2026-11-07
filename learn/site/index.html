@@ -150,6 +150,9 @@ td code{white-space:nowrap}
   h1{font-size:1.7rem}
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+.archsvg{overflow-x:auto;min-height:230px}
+.arch-node:focus{outline:none}
+.arch-node:focus rect{stroke-width:4}
 </style>
 
 <div class="app">
@@ -830,6 +833,9 @@ td code{white-space:nowrap}
     </div>
     <div class="row"><button class="btn ghost" id="bFlow">Step through</button><span id="flowMsg" style="font-size:.92rem"></span></div>
   </div>
+  <div class="panel"><h2>The tandem network, layer by layer</h2>
+    <img class="figimg" src="arch_tandem.png" alt="Tandem network: trained inverse network, sigmoid and box mapping, frozen forward ensemble, loss">
+    <p class="small">Every layer with its size. Only the left part (134,922 weights) learns; the forward ensemble on the right is frozen. Click through each layer in chapter 24; why these sizes: chapter 25.</p></div>
   <div class="prose">
     <h2>Training it, step by step</h2>
     <ol>
@@ -1003,6 +1009,7 @@ td code{white-space:nowrap}
   <div class="eyebrow">Chapter 19 · How accuracy is measured</div>
   <h1>What "accuracy" means in this project</h1>
   <p class="lead">The project predicts numbers (frequencies in GHz), not categories, so there is no single "accuracy %" like in classification. Each part is scored in the way that matches what it does.</p>
+  <div class="note">Why not R², percent error or the average of the two edges? Chapter 26 shows each alternative misleading, with live numbers.</div>
   <div class="tablewrap panel"><table>
     <thead><tr><th>Part</th><th>Input → output</th><th>Score</th><th>How it is computed</th></tr></thead>
     <tbody>
@@ -1277,9 +1284,163 @@ python src/shapes/export_web_models.py                     <span class="c"># upd
   <div class="eyebrow">Chapter 23 · Examiner practice</div>
   <h1>Questions you are likely to get</h1>
   <p class="lead">Say your answer out loud first, then open the card.</p>
+  <div class="note">This is the short list. The full set of viva questions, with follow-ups and a flashcard practice mode, is in chapter 27.</div>
   <div class="qa" id="qaList"></div>
   <h2>Quick self-check</h2>
   <div id="mcqList" style="display:flex;flex-direction:column;gap:16px"></div>
+</section>
+
+
+<!-- ============================================================ 24 ARCHITECTURES -->
+<section id="arch" data-title="The networks, drawn out" data-grp="Defend and explain" hidden>
+  <div class="eyebrow">Chapter 24 · The networks, drawn out</div>
+  <h1>Every network, layer by layer</h1>
+  <p class="lead">Pick a network and click any of its layers to see what it does, how many numbers it holds, and why it is there. The drawn diagrams further down are the printable versions (also in the report appendix and the backup slides).</p>
+  <div class="panel">
+    <div class="row" id="archChips"></div>
+    <div id="archSvg" class="archsvg" aria-label="Interactive network diagram"></div>
+    <div class="legend"><span><i style="background:var(--accent)"></i>trained</span><span><i style="background:var(--muted)"></i>frozen / not used to design</span><span><i style="background:var(--band2)"></i>fixed operation</span></div>
+    <div class="note" id="archInfo">Click a layer.</div>
+  </div>
+  <div class="panel"><h2>The tandem network (TNN)</h2>
+    <img class="figimg" src="arch_tandem.png" alt="Tandem network: inverse network, sigmoid and box mapping, design, frozen forward ensemble, loss">
+    <p class="small">Left: the inverse network (trained). Middle: its 10 outputs are squashed by a sigmoid and mapped into the allowed shape box. Right: the frozen forward ensemble predicts the band edges of that design; the loss compares them with the target and adds a small fabrication penalty. Gradients flow back through the frozen network, but only the inverse network's weights change.</p></div>
+  <div class="panel"><h2>The forward ensemble</h2>
+    <img class="figimg" src="arch_forward.png" alt="Forward ensemble of five MLPs from 18 Fourier features to two band edges">
+    <p class="small">Five identical MLPs started from different random weights. Their average is the prediction; their disagreement is the uncertainty.</p></div>
+  <div class="panel"><h2>The conditional VAE (+ refine)</h2>
+    <img class="figimg" src="arch_cvae.png" alt="Conditional VAE: encoder to a 4-number latent code, decoder to a design, then gradient refinement">
+    <p class="small">The encoder is only needed during training. To design, random codes z go through the decoder (64 per target), and each design is polished by 100 gradient steps on the frozen forward network.</p></div>
+  <div class="panel"><h2>How many weights does each network have?</h2>
+    <div class="tablewrap" id="archParams"></div>
+    <div class="worked"><p>A layer from 18 inputs to 256 neurons holds 18 × 256 weights + 256 biases = <b>4,864</b> numbers. Each 256 → 256 layer holds 256 × 256 + 256 = <b>65,792</b>. The output layer 256 → 2 holds 256 × 2 + 2 = <b>514</b>.</p>
+      <p>Forward network: 4,864 + 65,792 + 65,792 + 514 = <b>136,962</b>. Five of them: 684,810.</p></div>
+  </div>
+</section>
+
+<!-- ============================================================ 25 WHY THESE CHOICES -->
+<section id="why" data-title="Why these choices" data-grp="Defend and explain" hidden>
+  <div class="eyebrow">Chapter 25 · Why these choices</div>
+  <h1>Why 3 layers of 256, 5 networks, SiLU, 400 epochs ...</h1>
+  <p class="lead">Every setting has a reason, and the main ones were tested. The test trained single networks on the training split and scored them on the validation split, so the test split behind the reported results was never touched.</p>
+  <div class="note"><b>What to say:</b> "The sizes started as standard choices; I then tested them on the validation split: depth and width, activation, ensemble size, training length, the tandem's penalty and the CVAE's latent size." Then give the honest summary from below (for example: depth and SiLU matter most; a larger network or longer training would gain a few hundredths of a GHz, which changes no conclusion).</div>
+  <div class="panel"><h2>Depth × width</h2>
+    <p class="small">Validation error in GHz (mean of both edges) of a single network, averaged over 3 seeds. Click a cell. The outlined cell is the network used in the project.</p>
+    <div class="tablewrap" id="ablGrid"><p class="loading">Waiting for the architecture test results…</p></div>
+    <div class="readout" id="ablSel"></div>
+    <p id="whyDepth"></p><p class="small" id="whyDepthPush"></p>
+  </div>
+  <div class="lab">
+    <div class="panel"><h2>Activation function</h2><div class="bars" id="ablAct"></div><p class="small" id="whyAct"></p></div>
+    <div class="panel"><h2>Ensemble size</h2><canvas id="cvEns" height="210" aria-label="Validation error against number of networks"></canvas><p class="small" id="whyEns"></p></div>
+  </div>
+  <div class="lab">
+    <div class="panel"><h2>Training length</h2><canvas id="cvEp" height="210" aria-label="Validation error against training epochs"></canvas><p class="small" id="whyEp"></p></div>
+    <div class="panel"><h2>Does the spread mean anything?</h2><p id="whySpread"></p></div>
+  </div>
+  <div class="panel"><h2>Tandem: network size and fabrication penalty</h2><div class="tablewrap" id="ablTan"></div><p class="small" id="whyLam"></p></div>
+  <div class="panel"><h2>CVAE: latent size and β</h2><div class="tablewrap" id="ablCv"></div><p class="small" id="whyCv"></p></div>
+  <div class="panel"><h2>Overview figure</h2><img class="figimg" src="ablation.png" alt="Architecture test: error by depth and width, by ensemble size, and by training length"></div>
+  <div class="panel"><h2>Every setting at a glance</h2><div class="tablewrap" id="whyTable"></div></div>
+</section>
+
+<!-- ============================================================ 26 WHY THESE METRICS -->
+<section id="metrics" data-title="Why these accuracy measures" data-grp="Defend and explain" hidden>
+  <div class="eyebrow">Chapter 26 · Why these accuracy measures</div>
+  <h1>Why GHz, the worse edge and 1 GHz, and not R² or percent</h1>
+  <p class="lead">Chapter 19 says how accuracy is measured. This chapter shows, with live numbers, why the obvious alternatives would mislead.</p>
+  <div class="panel"><h2>One model, four scores</h2>
+    <p class="small">Move the slider to set how far off a model typically is. Watch which scores notice.</p>
+    <div class="ctl"><label for="mErr">typical error</label><input type="range" id="mErr" min="0.05" max="3" step="0.05" value="1"><output id="oErr"></output></div>
+    <div class="readout" style="grid-template-columns:repeat(4,minmax(0,1fr))" id="mScores"></div>
+    <p class="small" id="mMsg"></p>
+  </div>
+  <div class="panel"><h2>Two edges, one verdict</h2>
+    <p class="small">A design misses the lower edge by one amount and the upper edge by another. Should it pass?</p>
+    <div class="ctl"><label for="mLo">lower-edge error</label><input type="range" id="mLo" min="0" max="2.5" step="0.05" value="1.7"><output id="oLo"></output></div>
+    <div class="ctl"><label for="mUp">upper-edge error</label><input type="range" id="mUp" min="0" max="2.5" step="0.05" value="0.1"><output id="oUp"></output></div>
+    <div class="readout two" id="mVerdict"></div>
+  </div>
+  <h2>The alternatives, and why they were not the headline</h2>
+  <div class="cards" id="metricCards" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))"></div>
+  <div class="note"><b>So the project uses:</b> mean absolute error in GHz per edge, plus the 95th percentile and the share within 1 GHz (forward); re-simulated designs scored by their worse edge, success below 1 GHz, over 100 unseen targets and 5 seeds (inverse); and the share of designs within 1 GHz in COMSOL (final proof).</div>
+</section>
+
+<!-- ============================================================ 27 VIVA Q&A -->
+<section id="viva" data-title="Viva questions and answers" data-grp="Defend and explain" hidden>
+  <div class="eyebrow">Chapter 27 · Viva questions and answers</div>
+  <h1>The questions you may get, with answers</h1>
+  <p class="lead">Read the <b>must-know</b> ones first. Say your answer out loud before opening each card, then switch to practice mode and go through them like flashcards.</p>
+  <div class="panel tight">
+    <div class="row"><button class="chip" id="vModeRead" aria-pressed="true">Read</button><button class="chip" id="vModePrac" aria-pressed="false">Practice (flashcards)</button><button class="chip" id="vModeMock" aria-pressed="false">Mock viva (10 questions, timed)</button>
+      <span class="small" id="vCount" style="margin-left:auto"></span></div>
+    <div class="row" id="vTopics"></div>
+    <div class="row"><label class="small"><input type="checkbox" id="vMust"> must-know only</label>
+      <input type="search" id="vSearch" placeholder="Search questions and answers…" aria-label="Search the questions" style="flex:1 1 220px"></div>
+  </div>
+  <div class="qa" id="vivaList"><p class="loading">Loading…</p></div>
+  <div class="panel" id="vivaMock" hidden>
+    <div class="row"><span class="pill" id="mkTopic"></span><span class="small" id="mkProg" style="margin-left:auto"></span></div>
+    <div class="row" style="align-items:baseline"><h2 id="mkQ" style="flex:1"></h2><b id="mkTimer" style="font-family:var(--mono);font-size:1.6rem;color:var(--accent)"></b></div>
+    <p class="small" id="mkHint">Answer out loud before the timer runs out: one sentence, one number, then stop.</p>
+    <div id="mkA" hidden><p id="mkAns"></p><p class="small" id="mkPush"></p></div>
+    <div class="row"><button class="btn ghost" id="mkShow">Show model answer</button><button class="btn" id="mkNext">Next question</button><button class="chip" id="mkRestart" style="margin-left:auto">New mock viva</button></div>
+    <div id="mkSummary" hidden></div>
+  </div>
+  <div class="panel" id="vivaPrac" hidden>
+    <div class="row"><span class="pill" id="pTopic"></span><span class="small" id="pProg" style="margin-left:auto"></span></div>
+    <h2 id="pQ"></h2>
+    <div id="pA" hidden><p id="pAns"></p><p class="small" id="pPush"></p></div>
+    <div class="row"><button class="btn" id="pShow">Show answer</button><button class="btn ghost" id="pKnew" hidden>I knew it</button><button class="btn ghost" id="pAgain" hidden>Review again</button><button class="btn ghost" id="pSkip">Skip</button></div>
+    <div class="row"><label class="small"><input type="checkbox" id="pOnlyReview"> only cards marked "review"</label><button class="chip" id="pReset" style="margin-left:auto">Reset progress</button></div>
+  </div>
+</section>
+
+<!-- ============================================================ 28 FORMULAS -->
+<section id="formulas" data-title="Formula sheet" data-grp="Defend and explain" hidden>
+  <div class="eyebrow">Chapter 28 · Formula sheet</div>
+  <h1>The equations you might be asked to write</h1>
+  <p class="lead">Each with a one-line reading in plain words. If asked to write one on the board, say the reading out loud while you write.</p>
+  <div id="formulaList" style="display:flex;flex-direction:column;gap:12px"></div>
+</section>
+
+<!-- ============================================================ 29 INTERVIEW -->
+<section id="interview" data-title="Explaining it in a job interview" data-grp="Defend and explain" hidden>
+  <div class="eyebrow">Chapter 29 · Explaining it in a job interview</div>
+  <h1>Your project, told for interviewers</h1>
+  <p class="lead">Interviewers rarely know photonics. Lead with the problem and the engineering, keep the physics to one sentence, and have a number ready for every claim.</p>
+  <div class="panel"><h2>The 30-second version</h2><p id="ivP30"></p><div class="row"><button class="btn ghost" id="ivCopy">Copy</button><span class="small" id="ivCopied"></span></div></div>
+  <div class="panel"><h2>The 2-minute version</h2><div class="prose" id="ivP2"></div></div>
+  <div class="panel"><h2>The 5-minute technical walk-through</h2><div class="tablewrap" id="ivDeep"></div></div>
+  <h2>Interview stories (Situation → Task → Action → Result)</h2>
+  <div id="ivStories" style="display:flex;flex-direction:column;gap:12px"></div>
+  <div class="lab">
+    <div class="panel"><h2>Resume bullet points</h2><ul id="ivBullets"></ul></div>
+    <div class="panel"><h2>What to lead with, by role</h2><div class="tablewrap" id="ivRoles"></div></div>
+  </div>
+  <div class="panel"><h2>Skills this project shows</h2><div class="tablewrap" id="ivSkills"></div></div>
+  <div class="panel"><h2>Portfolio / LinkedIn post</h2><p id="ivLinked"></p><p class="small"><b>One-line description:</b> <span id="ivGh"></span></p></div>
+  <h2>Common interview questions, answered with this project</h2>
+  <div class="qa" id="ivQs"></div>
+</section>
+
+<!-- ============================================================ 30 VIVA DAY -->
+<section id="vivaday" data-title="Viva day plan" data-grp="Defend and explain" hidden>
+  <div class="eyebrow">Chapter 30 · Viva day plan</div>
+  <h1>The day of the evaluation</h1>
+  <p class="lead">What to say first, the numbers to know cold, what to do when stuck, and a checklist.</p>
+  <div class="tiles" id="vdTiles"></div>
+  <div id="vdItems" style="display:flex;flex-direction:column;gap:12px"></div>
+  <div class="panel"><h2>Checklist</h2><div id="vdCheck" style="display:flex;flex-direction:column;gap:6px"></div></div>
+  <div class="panel"><h2>Printable files (in the project's docs folder)</h2>
+    <div class="tablewrap"><table><thead><tr><th>File</th><th>What it is</th></tr></thead><tbody>
+      <tr><td><code>docs/Viva_QA.pdf</code></td><td>All the viva questions and answers</td></tr>
+      <tr><td><code>docs/Viva_Card.pdf</code></td><td>One page: opening, numbers, networks, if you get stuck</td></tr>
+      <tr><td><code>docs/Formula_Sheet.pdf</code></td><td>The equations with plain readings</td></tr>
+      <tr><td><code>docs/Architecture_and_Choices.pdf</code></td><td>Network diagrams, every setting and the architecture test</td></tr>
+      <tr><td><code>docs/Presenter_Script.pdf</code></td><td>What to say on each slide</td></tr>
+      <tr><td><code>docs/Interview_Guide.pdf</code></td><td>The project for job interviews</td></tr>
+    </tbody></table></div></div>
 </section>
 
   <div class="pager"><button class="btn ghost" id="pPrev">‹ Previous</button><button class="btn" id="pNext">Next ›</button></div>
@@ -1701,6 +1862,197 @@ function quizCh(){if($("#qaList").children.length)return;$("#qaList").innerHTML=
   $("#mcqList").innerHTML=MCQ.map(([q,opts],k)=>`<div class="panel tight mcq" data-k="${k}"><b>${q}</b>${opts.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join("")}<p class="why" hidden>${MCQ[k][3]}</p></div>`).join("");
   $$("#mcqList .mcq").forEach(box=>{const ri=MCQ[+box.dataset.k][2];box.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{box.querySelectorAll(".opt").forEach(x=>x.classList.remove("right","wrong"));b.classList.add(+b.dataset.i===ri?"right":"wrong");box.querySelector(`.opt[data-i="${ri}"]`).classList.add("right");box.querySelector(".why").hidden=false;});});}
 redraws.quiz=quizCh;
+
+
+/* ---------- chapters 24-30: defend and explain ---------- */
+const EX=()=>(D&&D.extras)||null;
+const fmt2=v=>(v==null||!isFinite(v))?"–":(+v).toFixed(2), fmt3=v=>(v==null||!isFinite(v))?"–":(+v).toFixed(3), comma=n=>(+n).toLocaleString("en-US");
+function lsGet(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+GLOSS.push(["Architecture test (ablation)","Training the same model with one setting changed at a time (depth, width, activation…) and comparing validation errors, to justify each choice.","25"],
+  ["Hidden layer","A layer of neurons between the input and the output. The forward network has 3, each with 256 neurons.","24"],
+  ["Weights (parameters)","The numbers a network learns: one per connection plus one bias per neuron. The forward network has 136,962.","24"],
+  ["Validation split","The 10 % of PWE cells used to make choices (like the architecture), never for the final score.","25"],
+  ["One-cycle schedule","Learning rate that rises, then falls to almost zero during training; converges faster.","25"],
+  ["Weight decay","A small pull of every weight towards zero during training (10⁻⁵ here) that discourages overfitting.","25"],
+  ["R² (coefficient of determination)","1 − error²/spread² of the data. Looks near-perfect whenever the data vary a lot, so it is not used as the headline here.","26"],
+  ["RMSE","Root mean squared error: like MAE but weights large errors more.","26"],
+  ["Active learning","Choosing the next expensive simulations where the model is most uncertain.","27"],
+  ["Leave-one-family-out","Testing on a whole shape family that was left out of training, to see if a model transfers.","27"],
+  ["COMSOL-aimed design","Designing with the corrected model: the target is shifted by the learned COMSOL − PWE offset.","27"],
+  ["STAR story","Interview answer told as Situation, Task, Action, Result.","29"]);
+
+/* --- 24: interactive network diagrams --- */
+const NETS={
+  tandem:{name:"Tandem network",nodes:[
+    {t:"in",lab:"target",n:2,info:"<b>Input: the target.</b> 2 numbers, f<sub>lower</sub> and f<sub>upper</sub> in GHz, standardised with the training targets' mean and spread."},
+    {t:"tr",lab:"256",n:256,sub:"SiLU",info:"<b>Hidden layer 1 (trained).</b> 2 × 256 weights + 256 biases = 768 numbers. Each neuron: weighted sum, then SiLU."},
+    {t:"tr",lab:"256",n:256,sub:"SiLU",info:"<b>Hidden layer 2 (trained).</b> 256 × 256 + 256 = 65,792 numbers. Same size as in the forward network, so the inverse network has similar capacity to the function it inverts."},
+    {t:"tr",lab:"256",n:256,sub:"SiLU",info:"<b>Hidden layer 3 (trained).</b> 65,792 numbers. In the architecture test (chapter 25), going from 1 to 3 hidden layers cut the error by about two thirds; larger networks help a little more."},
+    {t:"tr",lab:"10",n:10,sub:"raw",info:"<b>Output layer (trained).</b> 256 × 10 + 10 = 2,570 numbers: one raw value per design number. Total inverse network: 134,922 weights."},
+    {t:"op",lab:"sigmoid",info:"<b>Sigmoid</b> u = 1/(1 + e<sup>−z</sup>) squashes each raw value into (0, 1), so no output can leave the allowed range."},
+    {t:"op",lab:"box",info:"<b>Map to the allowed box.</b> r<sub>0</sub> = 25 + 50u µm; c<sub>3</sub>, s<sub>3</sub> = 0.35·r<sub>0</sub>·(2u − 1); c<sub>6</sub>, s<sub>6</sub> = 0.12·r<sub>0</sub>·(2u − 1). The result is the design p: 10 numbers in µm."},
+    {t:"op",lab:"18 feat.",info:"<b>Design → 18 features.</b> The 10 design numbers plus zeros for the n = 9 and 12 terms: the input format the forward network expects."},
+    {t:"fz",lab:"256",n:256,sub:"×5",info:"<b>Forward ensemble (frozen).</b> Five networks 18 → 256 → 256 → 256 → 2 that were trained first and then frozen: their weights do not change while the tandem trains."},
+    {t:"fz",lab:"256",n:256,sub:"×5",info:"<b>Frozen hidden layer.</b> Gradients still flow through it (that is how the inverse network learns), but it is never updated."},
+    {t:"fz",lab:"256",n:256,sub:"×5",info:"<b>Frozen hidden layer.</b>"},
+    {t:"fz",lab:"2",n:2,sub:"avg",info:"<b>Predicted band edges</b> of the proposed design: the average of the five networks."},
+    {t:"op",lab:"loss",info:"<b>Loss</b> = Σ ((predicted − target)/spread)² + 0.001 × fabrication penalty. Backpropagation sends the gradient back through the frozen ensemble into the inverse network, the only part that learns. 300 epochs on the band edges of training cells with a gap above 0.5 GHz."}]},
+  forward:{name:"Forward ensemble",nodes:[
+    {t:"in",lab:"18",n:18,sub:"features",info:"<b>Input: 18 Fourier numbers</b> (9 per hole: r<sub>0</sub> and the cos/sin parts of harmonics 3, 6, 9, 12), standardised. Any hole family maps to these 18 numbers."},
+    {t:"tr",lab:"256",n:256,sub:"SiLU",info:"<b>Hidden layer 1.</b> 18 × 256 + 256 = 4,864 weights."},
+    {t:"tr",lab:"256",n:256,sub:"SiLU",info:"<b>Hidden layer 2.</b> 65,792 weights."},
+    {t:"tr",lab:"256",n:256,sub:"SiLU",info:"<b>Hidden layer 3.</b> 65,792 weights. The test showed depth helps more than width: 3 layers of 64 beat 1 layer of 512."},
+    {t:"tr",lab:"2",n:2,sub:"edges",info:"<b>Output: f<sub>lower</sub>, f<sub>upper</sub></b> (standardised, then scaled back to GHz). 514 weights. One network: 136,962 weights."},
+    {t:"op",lab:"×5 avg",info:"<b>Ensemble.</b> Five such networks from different random starts; the average is the prediction (more accurate than any single one)."},
+    {t:"op",lab:"spread",info:"<b>Spread of the five</b> = uncertainty. Where they disagree, the error tends to be larger (chapter 25)."}]},
+  cvae:{name:"Conditional VAE",nodes:[
+    {t:"fz",lab:"12",n:12,sub:"u + target",info:"<b>Encoder input</b> (training only): the 10 normalised design numbers u and the 2 standardised band edges."},
+    {t:"fz",lab:"256",n:256,sub:"SiLU",info:"<b>Encoder layer.</b> The encoder (136,968 weights) is only used to train the decoder."},
+    {t:"fz",lab:"256",n:256,sub:"SiLU",info:"<b>Encoder layer.</b>"},
+    {t:"fz",lab:"256",n:256,sub:"SiLU",info:"<b>Encoder layer.</b>"},
+    {t:"fz",lab:"8",n:8,sub:"μ, log σ²",info:"<b>Encoder output:</b> mean and log-variance of a 4-number 'cloud' that describes the design given its target."},
+    {t:"op",lab:"z (4)",info:"<b>Latent code z</b> = μ + σ·ε, 4 numbers. The KL term (weight β = 0.5) keeps these clouds close to a standard normal, so at design time random z decode to sensible designs."},
+    {t:"tr",lab:"6",n:6,sub:"z + target",info:"<b>Decoder input:</b> the 4-number code and the 2 target edges."},
+    {t:"tr",lab:"256",n:256,sub:"SiLU",info:"<b>Decoder layer</b> (decoder: 135,946 weights)."},
+    {t:"tr",lab:"256",n:256,sub:"SiLU",info:"<b>Decoder layer.</b>"},
+    {t:"tr",lab:"256",n:256,sub:"SiLU",info:"<b>Decoder layer.</b>"},
+    {t:"tr",lab:"10",n:10,sub:"sigmoid",info:"<b>Decoder output:</b> 10 numbers squashed to (0, 1) and mapped to the shape box. Draw z 64 times → 64 different designs for one target."},
+    {t:"op",lab:"refine",info:"<b>+ refine:</b> each of the 64 designs gets 100 gradient steps on the frozen forward network (prediction error + fabrication penalty). Result: 97 % of targets reached with about 8 distinct designs, in 0.2 s."}]}};
+let archNet="tandem";
+function archCh(){const host=$("#archSvg");if(!host)return;
+  if(!$("#archChips").children.length){$("#archChips").innerHTML=Object.entries(NETS).map(([k,v])=>`<button class="chip" data-k="${k}" aria-pressed="${k===archNet}">${v.name}</button>`).join("");
+    $$("#archChips .chip").forEach(b=>b.onclick=()=>{archNet=b.dataset.k;$$("#archChips .chip").forEach(x=>x.setAttribute("aria-pressed",x===b));archCh();});
+    const ex=EX(),a=ex?ex.arch:{forward:136962,forward5:684810,tandem:134922,enc:136968,dec:135946};
+    $("#archParams").innerHTML=`<table><thead><tr><th>Network</th><th>Layers</th><th class="num">Weights</th></tr></thead><tbody>
+      <tr><td>Forward network (one)</td><td>18 → 256 → 256 → 256 → 2</td><td class="num">${comma(a.forward)}</td></tr>
+      <tr><td>Forward ensemble (five)</td><td>5 × the above</td><td class="num">${comma(a.forward5)}</td></tr>
+      <tr><td>Tandem inverse network</td><td>2 → 256 → 256 → 256 → 10</td><td class="num">${comma(a.tandem)}</td></tr>
+      <tr><td>CVAE encoder</td><td>12 → 256 → 256 → 256 → 8</td><td class="num">${comma(a.enc)}</td></tr>
+      <tr><td>CVAE decoder</td><td>6 → 256 → 256 → 256 → 10</td><td class="num">${comma(a.dec)}</td></tr></tbody></table>`;}
+  const net=NETS[archNet],N=net.nodes,w=Math.max(host.clientWidth||640,320),gap=w/N.length,H=230,mid=110;
+  const col=t=>t==="tr"?tok("--accent"):t==="fz"?tok("--muted"):t==="op"?tok("--band2"):tok("--ink");
+  let s=`<svg viewBox="0 0 ${w} ${H}" width="100%" height="${H}" role="img" aria-label="${net.name}">`;
+  const pos=N.map((nd,i)=>{const x=gap*(i+.5);const hh=nd.n?Math.min(170,28+22*Math.log2(nd.n)):46;return {x,hh};});
+  for(let i=0;i<N.length-1;i++){s+=`<line x1="${pos[i].x}" y1="${mid}" x2="${pos[i+1].x}" y2="${mid}" stroke="${tok("--line")}" stroke-width="2"/>`;}
+  N.forEach((nd,i)=>{const {x,hh}=pos[i],bw=Math.min(40,gap*.62),c=col(nd.t);
+    s+=`<g class="arch-node" data-i="${i}" tabindex="0" style="cursor:pointer"><rect x="${x-bw/2}" y="${mid-hh/2}" width="${bw}" height="${hh}" rx="8" fill="${tok("--surface")}" stroke="${c}" stroke-width="2.2"/>`+
+      `<text x="${x}" y="${mid+4}" text-anchor="middle" font-family="${tok("--mono")}" font-size="${nd.lab.length>4?10:12}" fill="${tok("--ink")}">${nd.lab}</text>`+
+      (nd.sub?`<text x="${x}" y="${mid+hh/2+16}" text-anchor="middle" font-size="11" fill="${tok("--muted")}">${nd.sub}</text>`:"")+`</g>`;});
+  if(archNet==="tandem"){const a=pos[1].x-20,b=pos[4].x+20,f1=pos[8].x-20,f2=pos[11].x+20;
+    s+=`<text x="${(a+b)/2}" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="${tok("--accent")}">inverse network: trained</text>`+
+       `<text x="${(f1+f2)/2}" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="${tok("--muted")}">forward ensemble: frozen</text>`+
+       `<path d="M ${pos[12].x} ${H-14} L ${pos[1].x} ${H-14}" stroke="${tok("--bad")}" stroke-width="1.6" marker-end="url(#ah)" fill="none"/>`+
+       `<text x="${(pos[1].x+pos[12].x)/2}" y="${H-20}" text-anchor="middle" font-size="11" fill="${tok("--bad")}">gradients flow back; only the trained part changes</text>`;}
+  s+=`<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="${tok("--bad")}"/></marker></defs></svg>`;
+  host.innerHTML=s;
+  host.querySelectorAll(".arch-node").forEach(g=>{const show=()=>{$("#archInfo").innerHTML=N[+g.dataset.i].info;host.querySelectorAll(".arch-node rect").forEach(r=>r.setAttribute("stroke-width","2.2"));g.querySelector("rect").setAttribute("stroke-width","4");};g.onclick=show;g.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();show();}};});
+  $("#archInfo").innerHTML=`<b>${net.name}.</b> Click any box for details.`;}
+redraws.arch=archCh;
+
+/* --- 25: why these choices (architecture test) --- */
+let ablPick=[3,256];
+function whyCh(){const ex=EX();if(!ex)return;const ab=ex.ablation||{},T=ex.why_text||{};
+  const set=(id,k)=>{const el=$(id);if(el)el.innerHTML=T[k]||"";};
+  set("#whyDepth","why_depth");set("#whyDepthPush","why_depth_push");set("#whyAct","why_act");set("#whyEns","why_ens");set("#whyEp","why_epochs");
+  set("#whySpread","why_spread");set("#whyLam","why_lambda");set("#whyCv","why_cvae");
+  $("#whyTable").innerHTML=`<table><thead><tr><th>Part</th><th>Setting</th><th>Value</th><th>Why</th></tr></thead><tbody>${ex.why.map(r=>`<tr><td>${r.g}</td><td>${r.s}</td><td class="m">${r.v}</td><td>${r.w}</td></tr>`).join("")}</tbody></table>`;
+  const A=ab.A_depth_width||[];
+  if(A.length){const deps=[...new Set(A.map(r=>r.depth))].sort((a,b)=>a-b),wids=[...new Set(A.map(r=>r.width))].sort((a,b)=>a-b);
+    const vals=A.map(r=>r.mae_mean),lo=Math.min(...vals),hi=Math.max(...vals),get=(d,w)=>A.find(r=>r.depth===d&&r.width===w);
+    $("#ablGrid").innerHTML=`<table><thead><tr><th>hidden layers ↓ / width →</th>${wids.map(w=>`<th class="num">${w}</th>`).join("")}</tr></thead><tbody>${deps.map(d=>`<tr><td><b>${d}</b></td>${wids.map(w=>{const r=get(d,w);if(!r)return "<td></td>";const f=(r.mae_mean-lo)/Math.max(hi-lo,1e-9);
+      const sel=d===ablPick[0]&&w===ablPick[1],used=d===3&&w===256;return `<td class="num" data-d="${d}" data-w="${w}" style="cursor:pointer;background:color-mix(in srgb,var(--accent) ${Math.round(60*(1-f))}%,transparent);${used?"outline:2px solid var(--ink);outline-offset:-2px;":""}${sel?"font-weight:700;":""}">${fmt3(r.mae_mean)}</td>`;}).join("")}</tr>`).join("")}</tbody></table>`;
+    $$("#ablGrid td[data-d]").forEach(td=>td.onclick=()=>{ablPick=[+td.dataset.d,+td.dataset.w];whyCh();});
+    const r=get(...ablPick)||A[0];
+    $("#ablSel").innerHTML=`<div><b>${r.depth} × ${r.width}</b><span>layers × neurons</span></div><div><b>${comma(r.params)}</b><span>weights</span></div><div><b>${fmt3(r.mae[0])} / ${fmt3(r.mae[1])}</b><span>validation MAE f<sub>lower</sub> / f<sub>upper</sub> (GHz)</span></div>`;}
+  const B=ab.B_activation||[];
+  if(B.length){const mx=Math.max(...B.map(r=>r.mae_mean));$("#ablAct").innerHTML=B.slice().sort((a,b)=>a.mae_mean-b.mae_mean).map(r=>`<div class="bar"><span>${r.activation}${r.activation==="SiLU"?" (used)":""}</span><div class="track"><div class="f1" style="width:${100*r.mae_mean/mx}%"></div></div><span class="v">${fmt3(r.mae_mean)}</span></div>`).join("");}
+  const Cc=ab.C_ensemble||[];
+  if(Cc.length){const [c,w,h]=setup($("#cvEns"));const ys=Cc.map(r=>r.mae_mean),y0=Math.min(...ys)*.95,y1=Math.max(...ys)*1.05;
+    const M=axes(c,w,h,{x0:0.5,x1:10.5,y0,y1,xticks:Cc.map(r=>[r.members,String(r.members)]),yl:"GHz",ylab:v=>v.toFixed(2)});line(c,M,Cc.map(r=>r.members),ys,tok("--accent"),2.5);
+    Cc.forEach(r=>{c.fillStyle=r.members===5?tok("--band2"):tok("--accent");c.beginPath();c.arc(M.X(r.members),M.Y(r.mae_mean),r.members===5?6:4,0,7);c.fill();});}
+  const Dd=ab.D_epochs||[];
+  if(Dd.length){const [c,w,h]=setup($("#cvEp"));const xs=Dd.map(r=>Math.log2(r.epochs)),ys=Dd.map(r=>r.mae_mean),y0=Math.min(...ys)*.95,y1=Math.max(...ys)*1.05;
+    const M=axes(c,w,h,{x0:Math.min(...xs)-.3,x1:Math.max(...xs)+.3,y0,y1,xticks:Dd.map(r=>[Math.log2(r.epochs),String(r.epochs)]),yl:"GHz",ylab:v=>v.toFixed(2)});line(c,M,xs,ys,tok("--band2"),2.5);
+    Dd.forEach(r=>{c.fillStyle=r.epochs===400?tok("--accent"):tok("--band2");c.beginPath();c.arc(M.X(Math.log2(r.epochs)),M.Y(r.mae_mean),r.epochs===400?6:4,0,7);c.fill();});}
+  const E=ab.E_tandem||[],pc=v=>v==null?"–":(Math.abs(100*v-Math.round(100*v))>0.01?(100*v).toFixed(1):Math.round(100*v))+" %";
+  if(E.length)$("#ablTan").innerHTML=`<table><thead><tr><th>Network</th><th class="num">penalty λ</th><th class="num">fabricable</th><th class="num">within 1 GHz</th><th class="num">fabricable and within 1 GHz</th></tr></thead><tbody>${E.map(r=>`<tr${r.depth===3&&r.width===256&&r.penalty_weight===0.001?' style="font-weight:700"':""}><td>${r.depth} × ${r.width}</td><td class="num">${r.penalty_weight}</td><td class="num">${pc(r.valid_share)}</td><td class="num">${pc(r.within_1GHz)}</td><td class="num">${pc(r.within_1GHz_and_valid)}</td></tr>`).join("")}</tbody></table><p class="small">200 validation targets; band edges from the forward network (not re-simulated). Bold: the setting used.</p>`;
+  const F=ab.F_cvae||[];
+  if(F.length)$("#ablCv").innerHTML=`<table><thead><tr><th class="num">latent size</th><th class="num">β</th><th class="num">samples within 1 GHz</th><th class="num">distinct designs within 1 GHz (of 8)</th></tr></thead><tbody>${F.map(r=>`<tr${r.latent===4&&r.beta===0.5?' style="font-weight:700"':""}><td class="num">${r.latent}</td><td class="num">${r.beta}</td><td class="num">${pc(r.samples_within_1GHz)}</td><td class="num">${(+r.distinct_within_1GHz_of_8).toFixed(1)}</td></tr>`).join("")}</tbody></table><p class="small">100 validation targets, 64 samples each, before refining; scored by the forward network and the exact fabrication rules. Bold: the setting used.</p>`;}
+redraws.why=whyCh;
+
+/* --- 26: why these accuracy measures --- */
+const SIG_LO=18.0;
+function metricsCh(){const ex=EX();
+  if(ex&&!$("#metricCards").children.length)$("#metricCards").innerHTML=ex.metrics.map(m=>`<div class="card"><b style="font-size:1rem">${m.m}</b><span class="tag">${m.what}</span><p>${m.why}</p><p class="small"><i>Example:</i> ${m.ex}</p></div>`).join("");
+  const e=+$("#mErr").value;$("#oErr").textContent=e.toFixed(2)+" GHz";const rmse=e*Math.sqrt(Math.PI/2),r2=1-(rmse/SIG_LO)**2;
+  $("#mScores").innerHTML=`<div><b>${e.toFixed(2)} GHz</b><span>MAE (what we report)</span></div><div><b>${(100*e/300).toFixed(2)} %</b><span>percent error at 300 GHz</span></div><div><b>${r2.toFixed(4)}</b><span>R² (data spread 18 GHz)</span></div><div><b>${e<1?'<span class="pill ok">passes</span>':'<span class="pill bad">fails</span>'}</b><span>1 GHz criterion</span></div>`;
+  $("#mMsg").innerHTML=e>=1?`At ${e.toFixed(2)} GHz the gap can miss a 2.16 GHz channel, yet the percent error is only ${(100*e/300).toFixed(2)} % and R² is still ${r2.toFixed(3)}: both look excellent. Only the GHz numbers show the problem.`:`Below 1 GHz the design passes. Notice R² stays above 0.99 across the whole slider: it cannot tell a good model from a bad one here.`;
+  const lo=+$("#mLo").value,up=+$("#mUp").value;$("#oLo").textContent=lo.toFixed(2)+" GHz";$("#oUp").textContent=up.toFixed(2)+" GHz";const av=(lo+up)/2,wo=Math.max(lo,up);
+  $("#mVerdict").innerHTML=`<div><b>${av.toFixed(2)} GHz ${av<1?'<span class="pill ok">pass</span>':'<span class="pill bad">fail</span>'}</b><span>average of the two edges</span></div><div><b>${wo.toFixed(2)} GHz ${wo<1?'<span class="pill ok">pass</span>':'<span class="pill bad">fail</span>'}</b><span>worse edge (what we use)</span></div>`;}
+redraws.metrics=metricsCh;
+
+/* --- 27: viva Q&A + practice --- */
+const VS={mode:"read",topic:"all",must:false,q:"",cur:null};
+function vivaFiltered(){const ex=EX();if(!ex)return [];const q=VS.q.toLowerCase();return ex.qa.map((x,i)=>Object.assign({i},x)).filter(x=>(VS.topic==="all"||x.t===VS.topic)&&(!VS.must||x.lvl==="must")&&(!q||(x.q+" "+x.a+" "+x.p).toLowerCase().includes(q)));}
+function vivaCh(){const ex=EX();if(!ex)return;
+  if(!$("#vTopics").children.length){$("#vTopics").innerHTML=[["all","All topics"]].concat(ex.topics).map(([k,n])=>`<button class="chip" data-k="${k}" aria-pressed="${k===VS.topic}">${n}</button>`).join("");
+    $$("#vTopics .chip").forEach(b=>b.onclick=()=>{VS.topic=b.dataset.k;$$("#vTopics .chip").forEach(x=>x.setAttribute("aria-pressed",x===b));VS.cur=null;vivaCh();});
+    $("#vMust").onchange=e=>{VS.must=e.target.checked;VS.cur=null;vivaCh();};$("#vSearch").oninput=e=>{VS.q=e.target.value;vivaCh();};
+    $("#vModeRead").onclick=()=>{VS.mode="read";vivaCh();};$("#vModePrac").onclick=()=>{VS.mode="prac";VS.cur=null;vivaCh();};
+    $("#vModeMock").onclick=()=>{VS.mode="mock";mockStart();vivaCh();};$("#mkShow").onclick=()=>{$("#mkA").hidden=false;};$("#mkNext").onclick=()=>mockNext();$("#mkRestart").onclick=()=>{mockStart();vivaCh();};
+    $("#pShow").onclick=()=>{$("#pA").hidden=false;$("#pShow").hidden=true;$("#pKnew").hidden=false;$("#pAgain").hidden=false;};
+    const mark=v=>{const st=lsGet("vcsl_viva",{});if(VS.cur!=null)st[VS.cur]=v;lsSet("vcsl_viva",st);VS.cur=null;vivaCh();};
+    $("#pKnew").onclick=()=>mark("known");$("#pAgain").onclick=()=>mark("review");$("#pSkip").onclick=()=>{VS.cur=null;vivaCh();};
+    $("#pOnlyReview").onchange=()=>{VS.cur=null;vivaCh();};$("#pReset").onclick=()=>{lsSet("vcsl_viva",{});VS.cur=null;vivaCh();};}
+  $("#vModeRead").setAttribute("aria-pressed",VS.mode==="read");$("#vModePrac").setAttribute("aria-pressed",VS.mode==="prac");$("#vModeMock").setAttribute("aria-pressed",VS.mode==="mock");$("#vivaMock").hidden=VS.mode!=="mock";
+  const list=vivaFiltered(),st=lsGet("vcsl_viva",{}),topics=Object.fromEntries(ex.topics);
+  const known=list.filter(x=>st[x.i]==="known").length;$("#vCount").textContent=`${list.length} questions · ${known} marked known`;
+  $("#vivaList").hidden=VS.mode!=="read";$("#vivaPrac").hidden=VS.mode!=="prac";
+  if(VS.mode==="mock"){mockShow();return;}
+  if(VS.mode==="read"){$("#vivaList").innerHTML=list.map(x=>`<details><summary>${x.lvl==="must"?'<span class="pill bad">must</span> ':''}${x.q}${st[x.i]==="known"?' <span class="pill ok">known</span>':st[x.i]==="review"?' <span class="pill warn">review</span>':''}</summary><p>${x.a}</p>${x.p?`<p class="small"><b>If they push:</b> ${x.p}</p>`:""}<p class="small">${topics[x.t]}</p></details>`).join("")||'<p class="small">No question matches.</p>';return;}
+  let pool=list.filter(x=>st[x.i]!=="known");if($("#pOnlyReview").checked)pool=list.filter(x=>st[x.i]==="review");
+  if(VS.cur==null||!pool.find(x=>x.i===VS.cur)){if(!pool.length){$("#pQ").textContent=$("#pOnlyReview").checked?"No cards marked 'review'.":"All cards in this selection are marked known. Well done!";$("#pTopic").textContent="";$("#pA").hidden=true;["#pShow","#pKnew","#pAgain"].forEach(s=>$(s).hidden=true);$("#pProg").textContent=`${known} / ${list.length} known`;return;}
+    VS.cur=pool[Math.floor(Math.random()*pool.length)].i;}
+  const x=ex.qa[VS.cur];$("#pTopic").textContent=topics[x.t]+(x.lvl==="must"?" · must":"");$("#pQ").innerHTML=x.q;$("#pAns").innerHTML=x.a;$("#pPush").innerHTML=x.p?"<b>If they push:</b> "+x.p:"";
+  $("#pA").hidden=true;$("#pShow").hidden=false;$("#pKnew").hidden=true;$("#pAgain").hidden=true;$("#pProg").textContent=`${known} / ${list.length} known · ${pool.length} left`;}
+const MOCK={seq:[],k:0,t:0,timer:null};const MOCK_ORDER=["big","physics","solver","forward","inverse","mf","accuracy","results","tricky","you"];
+function mockStart(){const ex=EX();if(!ex)return;MOCK.seq=MOCK_ORDER.map(t=>{const pool=ex.qa.map((x,i)=>Object.assign({i},x)).filter(x=>x.t===t);const must=pool.filter(x=>x.lvl==="must");const src=must.length?must:pool;return src.length?src[Math.floor(Math.random()*src.length)].i:null;}).filter(i=>i!=null);MOCK.k=0;mockTimer();}
+function mockTimer(){clearInterval(MOCK.timer);MOCK.t=60;const tick=()=>{const el=$("#mkTimer");if(!el)return;el.textContent=MOCK.t>0?MOCK.t+" s":"time";el.style.color=MOCK.t>10?"var(--accent)":"var(--bad)";if(MOCK.t>0)MOCK.t--;};tick();MOCK.timer=setInterval(tick,1000);}
+function mockShow(){const ex=EX();if(!ex||!MOCK.seq.length)return;const topics=Object.fromEntries(ex.topics);
+  if(MOCK.k>=MOCK.seq.length){clearInterval(MOCK.timer);$("#mkQ").textContent="Mock viva finished. Review the model answers below.";$("#mkTimer").textContent="";$("#mkTopic").textContent="";$("#mkProg").textContent="";$("#mkHint").hidden=true;$("#mkA").hidden=true;$("#mkShow").hidden=true;$("#mkNext").hidden=true;
+    $("#mkSummary").hidden=false;$("#mkSummary").innerHTML=MOCK.seq.map((i,n)=>`<details><summary>${n+1}. ${ex.qa[i].q}</summary><p>${ex.qa[i].a}</p></details>`).join("");return;}
+  const x=ex.qa[MOCK.seq[MOCK.k]];$("#mkSummary").hidden=true;$("#mkHint").hidden=false;$("#mkShow").hidden=false;$("#mkNext").hidden=false;$("#mkTopic").textContent=topics[x.t];$("#mkProg").textContent=`Question ${MOCK.k+1} of ${MOCK.seq.length}`;$("#mkQ").innerHTML=x.q;$("#mkAns").innerHTML=x.a;$("#mkPush").innerHTML=x.p?"<b>If they push:</b> "+x.p:"";$("#mkA").hidden=true;$("#mkNext").textContent=MOCK.k+1<MOCK.seq.length?"Next question":"Finish";}
+function mockNext(){MOCK.k++;if(MOCK.k<MOCK.seq.length)mockTimer();mockShow();}
+redraws.viva=vivaCh;
+
+/* --- 28: formula sheet --- */
+function formulasCh(){const ex=EX();if(!ex||$("#formulaList").children.length)return;
+  $("#formulaList").innerHTML=ex.formulas.map(f=>`<div class="panel tight"><h3>${f.n}</h3><div class="eq" style="white-space:normal">${f.f}</div><p class="small">${f.r}</p></div>`).join("");}
+redraws.formulas=formulasCh;
+
+/* --- 29: interview --- */
+function interviewCh(){const ex=EX();if(!ex||$("#ivP30").textContent)return;const iv=ex.interview;
+  $("#ivP30").textContent=iv.pitch30;$("#ivCopy").onclick=()=>{try{navigator.clipboard.writeText(iv.pitch30).then(()=>{$("#ivCopied").textContent="Copied.";},()=>{$("#ivCopied").textContent="Select the text and copy it.";});}catch(e){$("#ivCopied").textContent="Select the text and copy it.";}};
+  $("#ivP2").innerHTML=iv.pitch2.map(p=>`<p>${p}</p>`).join("");
+  $("#ivDeep").innerHTML=`<table><tbody>${iv.deep5.map(([a,b])=>`<tr><td><b>${a}</b></td><td>${b}</td></tr>`).join("")}</tbody></table>`;
+  $("#ivStories").innerHTML=iv.stories.map(([t,s,k,a,r])=>`<div class="panel tight"><h3>${t}</h3><div class="tablewrap"><table><tbody><tr><td><b>Situation</b></td><td>${s}</td></tr><tr><td><b>Task</b></td><td>${k}</td></tr><tr><td><b>Action</b></td><td>${a}</td></tr><tr><td><b>Result</b></td><td>${r}</td></tr></tbody></table></div></div>`).join("");
+  $("#ivBullets").innerHTML=iv.bullets.map(b=>`<li>${b}</li>`).join("");
+  $("#ivRoles").innerHTML=`<table><tbody>${iv.roles.map(([a,b])=>`<tr><td><b>${a}</b></td><td>${b}</td></tr>`).join("")}</tbody></table>`;
+  $("#ivSkills").innerHTML=`<table><tbody>${iv.skills.map(([a,b])=>`<tr><td><b>${a}</b></td><td>${b}</td></tr>`).join("")}</tbody></table>`;
+  if(iv.linkedin){$("#ivLinked").textContent=iv.linkedin;$("#ivGh").textContent=iv.github_line;}
+  $("#ivQs").innerHTML=iv.questions.map(([q,a])=>`<details><summary>${q}</summary><p>${a}</p></details>`).join("");}
+redraws.interview=interviewCh;
+
+/* --- 30: viva day --- */
+const VD_CHECK=["Read every must-know question aloud (chapter 27)","Practice mode until the must-know cards are all 'known'","Rehearse the presentation twice with the presenter script","Know the six numbers on the viva card","Open the web app once (streamlit run app.py) in case of a live demo","Print or download the viva card","Sleep. A rested brain answers better than a crammed one"];
+function vivadayCh(){const ex=EX();if(!ex)return;const n=(D&&D.final_numbers)||{};
+  $("#vdTiles").innerHTML=[[n.nComsol||"4,198","COMSOL cells"],[(n.mfCorrLo||"0.14")+" / "+(n.mfCorrUp||"0.23"),"GHz vs COMSOL, corrected"],[(n.tandemSucc||"99")+" %","targets within 1 GHz (tandem)"],["~"+(n.crDistinct||"8"),"designs per target"],[(n.verOK||"12")+" / "+(n.verN||"14"),"AI designs confirmed in COMSOL"]].map(([b,s])=>`<div class="tile"><b>${b}</b><span>${s}</span></div>`).join("");
+  if(!$("#vdItems").children.length)$("#vdItems").innerHTML=ex.vivaday.map(([t,d])=>`<div class="panel tight"><h3>${t}</h3><p>${d}</p></div>`).join("");
+  const st=lsGet("vcsl_vivaday",{});$("#vdCheck").innerHTML=VD_CHECK.map((t,i)=>`<label><input type="checkbox" data-i="${i}" ${st[i]?"checked":""}> ${t}</label>`).join("");
+  $$("#vdCheck input").forEach(cb=>cb.onchange=()=>{const s=lsGet("vcsl_vivaday",{});s[cb.dataset.i]=cb.checked;lsSet("vcsl_vivaday",s);});}
+redraws.vivaday=vivadayCh;
+["#mErr","#mLo","#mUp"].forEach(s=>{const el=$(s);if(el)el.addEventListener("input",metricsCh);});
 
 /* ---------- navigation ---------- */
 const SECS=$$("main section");let cur=0,seen=new Set();try{seen=new Set(JSON.parse(localStorage.getItem("vcsl_seen")||"[]"));}catch(e){}

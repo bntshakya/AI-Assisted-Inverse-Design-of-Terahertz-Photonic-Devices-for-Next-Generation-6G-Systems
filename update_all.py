@@ -90,11 +90,18 @@ def main():
     run("save networks for design.py and the app (about 12 min)", ["src/shapes/save_models.py"])
     run("final numbers", ["src/shapes/make_final_numbers.py"])
     run("final figures", ["src/shapes/make_final_figures.py"])
+    run("architecture diagrams", ["src/shapes/make_arch_figures.py"])
+    for f in ("arch_all.png", "pipeline.png"):
+        if os.path.exists(f"results/optionb/figs/{f}"):
+            shutil.copy(f"results/optionb/figs/{f}", f"../Report/final/figures/{f}")
     run("poster", ["src/shapes/make_poster.py"])
+    run("poster options B and C", ["src/shapes/make_poster_variants.py"])
+    run("website numbers", ["learn/patch_site_numbers.py"])
+    if os.path.exists("learn/viva_content.py"):  # personal viva material, kept out of git
+        run("viva / interview material (site data, PDFs, report appendix table)", ["learn/build_extras.py"])
     compile_report()
     run("study guide PDF", ["src/shapes/build_guide.py"])
     run("PWE cheat sheet", ["src/shapes/build_pwe_cheatsheet.py"])
-    run("website numbers", ["learn/patch_site_numbers.py"])
     for f in ("pwe_validation.png", "inverse.png", "accuracy_cdf.png"):
         if os.path.exists(f"results/optionb/figs/{f}"):
             shutil.copy(f"results/optionb/figs/{f}", f"learn/site/{f}")

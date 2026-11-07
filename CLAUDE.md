@@ -192,3 +192,17 @@ inverse (MDN / conditional INN / guided diffusion, cf. Zhang et al. 2026) · 6 f
   designer.design(model='corr') shifts the target by the mean correction; 12 corr designs (made with the 3,198-cell correction):
   data/comsol/new/sweep_verify_corrected_designs.txt (FILES_FOR_COMSOL/5_OPTIONAL...). Raw circle export kept at
   data/comsol/sweep_circles_ALL_fourier.csv (copied to new/global_eval_circles_fourier_model.csv for update_all.py).
+- OVERNIGHT ADDITIONS (2026-11-07): learn/viva_content.py = single source for 86 viva Q&A (13 topics, must/nice), why-choices,
+  metric alternatives, formulas, interview guide (pitches, STAR stories, resume bullets, LinkedIn post), viva-day plan.
+  learn/build_extras.py -> web_data.json "extras", docs/Viva_QA.pdf, Viva_Card.pdf, Formula_Sheet.pdf,
+  Architecture_and_Choices.pdf, Presenter_Script.pdf (from the deck notes), Interview_Guide.pdf, ../Report/final/ablation.tex.
+  Study site now 30 chapters (24 arch diagrams with clickable layers, 25 why-choices + ablation explorer, 26 why-metrics demos,
+  27 viva Q&A + flashcards (localStorage vcsl_viva), 28 formulas, 29 interview, 30 viva day). Images must be static <img> tags
+  (make_offline_site.py only embeds static src). rAF does not fire in the hidden preview pane: test by calling redraws[id]().
+  src/shapes/ablation_architecture.py: architecture test on the VALIDATION split (seed-0 split; test untouched).
+  Finding: depth matters most (1/2/3 layers x256: 0.61/0.28/0.21 GHz single-net val MAE); bigger nets are ~0.04 GHz better
+  (3x512 0.17, 4x512 0.16) and 5x512 is unstable (one seed failed); ReLU 0.57 vs SiLU 0.21 (GELU 0.20); epochs 100/200/400/800: 0.39/0.30/0.21/0.15 (400 not converged); ensemble 1/5/10: 0.19/0.17/0.17, top-10% spread cells 3.7x error. 3x256 kept (all
+  reported results use it); texts say so honestly ("changes no conclusion; easy upgrade in Sem IV"). Do NOT claim 3x256 optimal.
+  make_arch_figures.py (arch_tandem/forward/cvae/all.png; report appendix Fig. arch + Table abl). make_poster_variants.py ->
+  ../Report/final/poster_options/ (A classic, B story, C visual + compare_posters.png). Pipeline figure updated (4,198 cells).
+  Ablation E/F: tandem 2x128..3x512 all 99.5-100% (surrogate-judged); lambda 0 -> 90.5% fabricable, 0.001 = 0.01 = 100%; CVAE latent 2/4/8 -> 4.2/4.6/6.9 distinct designs (before refine), beta 0.1/0.5/1.0 -> 3.7/4.6/4.9. Reference check: all 26 exist; kumar2022 author list fixed (../Report/final/REFERENCE_CHECK.md). Deck has backup slides.

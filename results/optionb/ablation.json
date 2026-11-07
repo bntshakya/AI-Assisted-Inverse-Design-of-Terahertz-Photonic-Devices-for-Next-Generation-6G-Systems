@@ -1,0 +1,480 @@
+{
+ "note": "trained on the train split, scored on the validation split (seed-0 split of run_optionb.py); MAE in GHz, mean over seeds; inverse parts scored by the forward ensemble + exact fabrication rules",
+ "n_train": 4800,
+ "n_val": 600,
+ "A_depth_width": [
+  {
+   "depth": 1,
+   "width": 64,
+   "params": 1346,
+   "mae": [
+    0.7004,
+    0.7515
+   ],
+   "mae_mean": 0.7259,
+   "mae_seed_std": 0.0451,
+   "train_s": 23.2
+  },
+  {
+   "depth": 1,
+   "width": 128,
+   "params": 2690,
+   "mae": [
+    0.6078,
+    0.6852
+   ],
+   "mae_mean": 0.6465,
+   "mae_seed_std": 0.0083,
+   "train_s": 24.2
+  },
+  {
+   "depth": 1,
+   "width": 256,
+   "params": 5378,
+   "mae": [
+    0.5821,
+    0.6358
+   ],
+   "mae_mean": 0.6089,
+   "mae_seed_std": 0.0126,
+   "train_s": 22.2
+  },
+  {
+   "depth": 1,
+   "width": 512,
+   "params": 10754,
+   "mae": [
+    0.5863,
+    0.6057
+   ],
+   "mae_mean": 0.596,
+   "mae_seed_std": 0.0135,
+   "train_s": 21.3
+  },
+  {
+   "depth": 2,
+   "width": 64,
+   "params": 5506,
+   "mae": [
+    0.2845,
+    0.4244
+   ],
+   "mae_mean": 0.3545,
+   "mae_seed_std": 0.0117,
+   "train_s": 25.5
+  },
+  {
+   "depth": 2,
+   "width": 128,
+   "params": 19202,
+   "mae": [
+    0.2299,
+    0.3656
+   ],
+   "mae_mean": 0.2978,
+   "mae_seed_std": 0.0152,
+   "train_s": 25.9
+  },
+  {
+   "depth": 2,
+   "width": 256,
+   "params": 71170,
+   "mae": [
+    0.2135,
+    0.3428
+   ],
+   "mae_mean": 0.2781,
+   "mae_seed_std": 0.0068,
+   "train_s": 25.9
+  },
+  {
+   "depth": 2,
+   "width": 512,
+   "params": 273410,
+   "mae": [
+    0.2115,
+    0.3056
+   ],
+   "mae_mean": 0.2586,
+   "mae_seed_std": 0.0034,
+   "train_s": 26.0
+  },
+  {
+   "depth": 3,
+   "width": 64,
+   "params": 9666,
+   "mae": [
+    0.225,
+    0.3224
+   ],
+   "mae_mean": 0.2737,
+   "mae_seed_std": 0.0074,
+   "train_s": 28.7
+  },
+  {
+   "depth": 3,
+   "width": 128,
+   "params": 35714,
+   "mae": [
+    0.1939,
+    0.2884
+   ],
+   "mae_mean": 0.2412,
+   "mae_seed_std": 0.0059,
+   "train_s": 28.6
+  },
+  {
+   "depth": 3,
+   "width": 256,
+   "params": 136962,
+   "mae": [
+    0.1746,
+    0.2369
+   ],
+   "mae_mean": 0.2057,
+   "mae_seed_std": 0.0006,
+   "train_s": 28.9
+  },
+  {
+   "depth": 3,
+   "width": 512,
+   "params": 536066,
+   "mae": [
+    0.1444,
+    0.1887
+   ],
+   "mae_mean": 0.1666,
+   "mae_seed_std": 0.0018,
+   "train_s": 28.1
+  },
+  {
+   "depth": 4,
+   "width": 64,
+   "params": 13826,
+   "mae": [
+    0.2182,
+    0.3015
+   ],
+   "mae_mean": 0.2598,
+   "mae_seed_std": 0.0043,
+   "train_s": 31.2
+  },
+  {
+   "depth": 4,
+   "width": 128,
+   "params": 52226,
+   "mae": [
+    0.1939,
+    0.2641
+   ],
+   "mae_mean": 0.229,
+   "mae_seed_std": 0.0063,
+   "train_s": 32.4
+  },
+  {
+   "depth": 4,
+   "width": 256,
+   "params": 202754,
+   "mae": [
+    0.1636,
+    0.1968
+   ],
+   "mae_mean": 0.1802,
+   "mae_seed_std": 0.0006,
+   "train_s": 32.5
+  },
+  {
+   "depth": 4,
+   "width": 512,
+   "params": 798722,
+   "mae": [
+    0.1434,
+    0.1763
+   ],
+   "mae_mean": 0.1599,
+   "mae_seed_std": 0.0033,
+   "train_s": 36.0
+  },
+  {
+   "depth": 5,
+   "width": 64,
+   "params": 17986,
+   "mae": [
+    0.2242,
+    0.2906
+   ],
+   "mae_mean": 0.2574,
+   "mae_seed_std": 0.0084,
+   "train_s": 36.1
+  },
+  {
+   "depth": 5,
+   "width": 128,
+   "params": 68738,
+   "mae": [
+    0.1909,
+    0.2428
+   ],
+   "mae_mean": 0.2168,
+   "mae_seed_std": 0.0084,
+   "train_s": 36.6
+  },
+  {
+   "depth": 5,
+   "width": 256,
+   "params": 268546,
+   "mae": [
+    0.1674,
+    0.2077
+   ],
+   "mae_mean": 0.1876,
+   "mae_seed_std": 0.0048,
+   "train_s": 37.7
+  },
+  {
+   "depth": 5,
+   "width": 512,
+   "params": 1061378,
+   "mae": [
+    0.3681,
+    0.5603
+   ],
+   "mae_mean": 0.4642,
+   "mae_seed_std": 0.4211,
+   "train_s": 41.5
+  }
+ ],
+ "B_activation": [
+  {
+   "activation": "SiLU",
+   "mae": [
+    0.1746,
+    0.2369
+   ],
+   "mae_mean": 0.2057,
+   "mae_seed_std": 0.0006
+  },
+  {
+   "activation": "ReLU",
+   "mae": [
+    0.4675,
+    0.6658
+   ],
+   "mae_mean": 0.5666,
+   "mae_seed_std": 0.0034
+  },
+  {
+   "activation": "GELU",
+   "mae": [
+    0.1803,
+    0.2284
+   ],
+   "mae_mean": 0.2043,
+   "mae_seed_std": 0.0043
+  },
+  {
+   "activation": "Tanh",
+   "mae": [
+    0.3032,
+    0.4618
+   ],
+   "mae_mean": 0.3825,
+   "mae_seed_std": 0.0056
+  }
+ ],
+ "C_ensemble": [
+  {
+   "members": 1,
+   "mae": [
+    0.1641,
+    0.2219
+   ],
+   "mae_mean": 0.193
+  },
+  {
+   "members": 2,
+   "mae": [
+    0.1473,
+    0.2097
+   ],
+   "mae_mean": 0.1785
+  },
+  {
+   "members": 3,
+   "mae": [
+    0.1472,
+    0.193
+   ],
+   "mae_mean": 0.1701,
+   "corr_spread_error": 0.547,
+   "err_top10pct_spread": 0.461,
+   "err_rest": 0.138
+  },
+  {
+   "members": 5,
+   "mae": [
+    0.1473,
+    0.1885
+   ],
+   "mae_mean": 0.1679,
+   "corr_spread_error": 0.626,
+   "err_top10pct_spread": 0.491,
+   "err_rest": 0.132
+  },
+  {
+   "members": 10,
+   "mae": [
+    0.1459,
+    0.1878
+   ],
+   "mae_mean": 0.1668,
+   "corr_spread_error": 0.657,
+   "err_top10pct_spread": 0.504,
+   "err_rest": 0.129
+  }
+ ],
+ "D_epochs": [
+  {
+   "epochs": 100,
+   "mae": [
+    0.3173,
+    0.4544
+   ],
+   "mae_mean": 0.3858,
+   "train_s": 7.9
+  },
+  {
+   "epochs": 200,
+   "mae": [
+    0.2475,
+    0.3504
+   ],
+   "mae_mean": 0.299,
+   "train_s": 14.9
+  },
+  {
+   "epochs": 400,
+   "mae": [
+    0.1746,
+    0.2369
+   ],
+   "mae_mean": 0.2057,
+   "train_s": 30.0
+  },
+  {
+   "epochs": 800,
+   "mae": [
+    0.128,
+    0.1666
+   ],
+   "mae_mean": 0.1473,
+   "train_s": 60.2
+  }
+ ],
+ "inverse_val_targets": 200,
+ "E_tandem": [
+  {
+   "depth": 2,
+   "width": 128,
+   "penalty_weight": 0.001,
+   "valid_share": 1.0,
+   "worst_edge_mean": 0.064,
+   "within_1GHz": 0.995,
+   "within_1GHz_and_valid": 0.995,
+   "train_s": 183.7
+  },
+  {
+   "depth": 3,
+   "width": 256,
+   "penalty_weight": 0.001,
+   "valid_share": 1.0,
+   "worst_edge_mean": 0.041,
+   "within_1GHz": 1.0,
+   "within_1GHz_and_valid": 1.0,
+   "train_s": 176.6
+  },
+  {
+   "depth": 4,
+   "width": 256,
+   "penalty_weight": 0.001,
+   "valid_share": 1.0,
+   "worst_edge_mean": 0.041,
+   "within_1GHz": 1.0,
+   "within_1GHz_and_valid": 1.0,
+   "train_s": 175.9
+  },
+  {
+   "depth": 3,
+   "width": 512,
+   "penalty_weight": 0.001,
+   "valid_share": 1.0,
+   "worst_edge_mean": 0.044,
+   "within_1GHz": 1.0,
+   "within_1GHz_and_valid": 1.0,
+   "train_s": 178.8
+  },
+  {
+   "depth": 3,
+   "width": 256,
+   "penalty_weight": 0.0,
+   "valid_share": 0.905,
+   "worst_edge_mean": 0.036,
+   "within_1GHz": 1.0,
+   "within_1GHz_and_valid": 0.905,
+   "train_s": 175.7
+  },
+  {
+   "depth": 3,
+   "width": 256,
+   "penalty_weight": 0.01,
+   "valid_share": 1.0,
+   "worst_edge_mean": 0.044,
+   "within_1GHz": 1.0,
+   "within_1GHz_and_valid": 1.0,
+   "train_s": 177.4
+  }
+ ],
+ "F_cvae": [
+  {
+   "latent": 2,
+   "beta": 0.5,
+   "samples_within_1GHz": 0.076,
+   "distinct_within_1GHz_of_8": 4.23,
+   "best_worst_edge_mean": 0.483,
+   "train_s": 57.7
+  },
+  {
+   "latent": 4,
+   "beta": 0.5,
+   "samples_within_1GHz": 0.078,
+   "distinct_within_1GHz_of_8": 4.59,
+   "best_worst_edge_mean": 0.447,
+   "train_s": 54.7
+  },
+  {
+   "latent": 8,
+   "beta": 0.5,
+   "samples_within_1GHz": 0.216,
+   "distinct_within_1GHz_of_8": 6.93,
+   "best_worst_edge_mean": 0.28,
+   "train_s": 54.1
+  },
+  {
+   "latent": 4,
+   "beta": 0.1,
+   "samples_within_1GHz": 0.064,
+   "distinct_within_1GHz_of_8": 3.71,
+   "best_worst_edge_mean": 0.478,
+   "train_s": 53.2
+  },
+  {
+   "latent": 4,
+   "beta": 1.0,
+   "samples_within_1GHz": 0.092,
+   "distinct_within_1GHz_of_8": 4.93,
+   "best_worst_edge_mean": 0.45,
+   "train_s": 53.7
+  }
+ ],
+ "minutes": 70.9
+}

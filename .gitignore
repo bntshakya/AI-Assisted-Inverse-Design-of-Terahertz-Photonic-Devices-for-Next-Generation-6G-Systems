@@ -2,3 +2,10 @@ data/comsol
 .venv/
 __pycache__/
 *.bak
+# personal viva and interview preparation (kept on this laptop only)
+docs/Viva_QA.pdf
+docs/Viva_Card.pdf
+docs/Interview_Guide.pdf
+docs/Presenter_Script.pdf
+learn/viva_content.py
+OVERNIGHT_SUMMARY.md
